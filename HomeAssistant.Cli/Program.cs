@@ -11,7 +11,7 @@ var appointmentFounderInRecordedAudio = async () =>
     Dictionary<string, string> @params = new()
     {
          {"runner_system_file_path", @"Scripts/whisper"},
-         {"runner_system_file_name", @"asd3.py"},
+         {"runner_system_file_name", @"whisper.py"},
          {"runner_system_arguements", @"C:\Users\sasli\source\repos\HomeAssistant\HomeAssistant.Cli\bin\Debug\net8.0\output.wav C:\Users\sasli\source\repos\HomeAssistant\HomeAssistant.Cli\bin\Debug\net8.0\llama_input.txt"},
          {"recorder_system_wait_for_exit_in_ms", "15000"},
          {"recorder_system_stop_automatacilly_after_silence_of_ms", "3000"},
@@ -69,8 +69,8 @@ var imre = async () =>
     @params = new()
     {
          {"runner_system_file_path", @"Scripts/whisper"},
-         {"runner_system_file_name", @"asd3.py"},
-         {"runner_system_arguements", @"C:\Users\sasli\source\repos\HomeAssistant\HomeAssistant.Cli\bin\Debug\net8.0\output.wav C:\Users\sasli\source\repos\HomeAssistant\HomeAssistant.Cli\bin\Debug\net8.0\llama_input.txt False"},
+         {"runner_system_file_name", @"whisper.py"},
+         {"runner_system_arguements", $@"{RecorderMicrophone.SharedObject.RecorderOutputPath} {LlamaStudio.SharedObject.InputTextFilePath} False"},
     };
 
     var speechRecognitionSystem = SubSystemFactory<RunnerSystem>.Create(@params, recorderMicrophoneSystem);
@@ -87,7 +87,7 @@ var imre = async () =>
          {"runner_system_file_path", @"C:\Users\sasli\Downloads\piper_windows_amd64\piper"},
          {"runner_system_file_name", @"piper.exe"},
          {"runner_system_arguements", @"-m C:\Users\sasli\Downloads\piper_windows_amd64\piper\hu_HU-imre-medium.onnx -f C:\Users\sasli\Downloads\piper_windows_amd64\piper\output.wav --json-input "},
-         {"runner_system_dependent_subsystem_output_path", llamaSystem.GetOutputPath() },
+         {"runner_system_dependent_subsystem_output_path", LlamaStudio.SharedObject.LlamaOutputFilePathTxt },
          {"runner_system_dependent_convert_output_path_to_json", "true" }
     };
 

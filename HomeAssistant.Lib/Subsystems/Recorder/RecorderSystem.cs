@@ -1,7 +1,5 @@
-﻿using HomeAssistant.Lib.Logger;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using SubSystemComponent;
-using System.Diagnostics;
 
 namespace Recorder
 {
@@ -15,8 +13,6 @@ namespace Recorder
         private WasapiLoopbackCapture _wasapiLoopback;
         private WaveFileWriter _waveFileWriter;
 
-        private static object _lock = new object();
-
         private string recorderOutputPath = string.Empty;
 
         // Parameters
@@ -24,16 +20,13 @@ namespace Recorder
         private double recorder_system_stop_automatacilly_after_silence_of_ms;
 
         public RecorderSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(@params, dependencies)
-        { }
+     base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+
+        }
 
         public override void Initialize()
         {
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
@@ -66,6 +59,7 @@ namespace Recorder
             // Set up a WaveFileWriter to save captured audio to a file
             _waveFileWriter = new WaveFileWriter(recorderOutputPath, waveFormat);
 
+
             // Variables to track silence detection
             bool isRecordingSilence = false;
             const int soundResetWindow = 3; // Reset the silence state if sound is detected within this window before silenceThreshold
@@ -89,7 +83,7 @@ namespace Recorder
                         //Console.WriteLine(amplitude);
                         if (amplitude < 100) // Adjust threshold as needed
                         {
-                            consecutiveSilentFrames+=60;
+                            consecutiveSilentFrames += 60;
                             consecutiveSoundFrames = 0;
 
                             if (consecutiveSilentFrames >= recorder_system_stop_automatacilly_after_silence_of_ms)

@@ -6,7 +6,8 @@ namespace Whisper
     internal class ConfigObject
     {
         public const string AppName = "Whisper";
-        public static string ConfigFilePath = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, AppName + "_Config.json");
+        public static string AppFolder = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, AppName);
+        public static string ConfigFilePath = Path.Combine(AppFolder, "config.json");
         public static string LogFilePath = Path.Combine(MasterSystemInfo.LogFolderPath, $"{AppName}.log");
 
         public GgmlType WhisperModel { get; private set; } = GgmlType.Medium;

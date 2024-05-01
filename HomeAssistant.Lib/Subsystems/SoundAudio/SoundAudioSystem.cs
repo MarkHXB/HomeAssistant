@@ -1,6 +1,4 @@
-﻿using HomeAssistant.Lib.Logger;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using SubSystemComponent;
 
 namespace SoundAudio
@@ -15,16 +13,13 @@ namespace SoundAudio
         private string recorderOutputPath = string.Empty;
 
         public SoundAudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(@params, dependencies)
-        { }
+     base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+
+        }
 
         public override void Initialize()
         {
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
@@ -36,44 +31,57 @@ namespace SoundAudio
             recorderOutputPath = config.RecorderOutputPath;
         }
 
-        public override Task TaskObject(CancellationToken cancellationToken)
+        public override async Task TaskObject(CancellationToken cancellationToken)
         {
-            return Task.Run(() =>
+            if (!File.Exists(recorderOutputPath))
             {
-                if (!File.Exists(recorderOutputPath))
-                {
-                    throw new Exception(recorderOutputPath + " not found sound file.");
-                }
+                throw new Exception(recorderOutputPath + " not found sound file.");
+            }
 
-                // Create WasapiLoopbackCapture to capture system audio
-                using (var waveReader = new WaveFileReader(recorderOutputPath))
+            using (var waveReader = new WaveFileReader(recorderOutputPath))
+            {
+                using (var _waveOutEvent = new WaveOutEvent())
                 {
-                    using (var _waveOutEvent = new WaveOutEvent())
+                    // Start audio playback
+                    _waveOutEvent.Init(waveReader);
+                    _waveOutEvent.Play();
+
+                    // TaskCompletionSource to await playback completion
+                    var playbackCompletedTcs = new TaskCompletionSource<bool>();
+
+                    // Event handler for playback stopped
+                    _waveOutEvent.PlaybackStopped += (sender, args) =>
                     {
-                        // Start audio playback
-                        _waveOutEvent.Init(waveReader);
-                        _waveOutEvent.Play();
+                        // Dispose of the WaveOutEvent when playback stops
+                        _waveOutEvent.Dispose();
 
-                        // Event handler for playback stopped
-                        _waveOutEvent.PlaybackStopped += (sender, args) =>
-                        {
-                            // Dispose of the WaveOutEvent when playback stops
-                            _waveOutEvent.Dispose();
-                        };
+                        // Set the task completion
+                        playbackCompletedTcs.TrySetResult(true);
+                    };
 
-                        //// Wait until playback is finished or cancellation is requested
-                        while (_waveOutEvent.PlaybackState == PlaybackState.Playing)
+                    // Wait asynchronously until playback is finished or cancellation is requested
+                    while (true)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
                         {
-                            if (cancellationToken.IsCancellationRequested)
-                            {
-                                _waveOutEvent.Stop();
-                                break;
-                            }
-                            Thread.Sleep(10);
+                            _waveOutEvent.Stop();
+                            break;
                         }
+
+                        // Check if playback is completed
+                        if (_waveOutEvent.PlaybackState == PlaybackState.Stopped)
+                        {
+                            break;
+                        }
+
+                        // Await a short delay to avoid busy waiting
+                        await Task.Delay(100);
                     }
+
+                    // Await playback completion or cancellation
+                    await playbackCompletedTcs.Task;
                 }
-            });
+            }
         }
     }
 }

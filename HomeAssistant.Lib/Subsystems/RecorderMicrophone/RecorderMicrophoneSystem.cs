@@ -1,8 +1,6 @@
-﻿using HomeAssistant.Lib.Logger;
-using NAudio.CoreAudioApi;
+﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using SubSystemComponent;
-using System.Diagnostics;
 
 namespace RecorderMicrophone
 {
@@ -13,6 +11,7 @@ namespace RecorderMicrophone
     /// </summary>
     public class RecorderMicrophoneSystem : Subsystem
     {
+        private const string AppName = nameof(RecorderMicrophoneSystem);
         private WasapiCapture _wasapiCapture;
         private WaveFileWriter _waveFileWriter;
 
@@ -23,16 +22,12 @@ namespace RecorderMicrophone
         private double recorder_system_stop_automatacilly_after_silence_of_ms;
 
         public RecorderMicrophoneSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(@params, dependencies)
-        { }
+    base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+        }
 
         public override void Initialize()
         {
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
@@ -91,7 +86,7 @@ namespace RecorderMicrophone
                         //Console.WriteLine(amplitude);
                         if (amplitude < 100) // Adjust threshold as needed
                         {
-                            consecutiveSilentFrames+=60;
+                            consecutiveSilentFrames += 60;
                             consecutiveSoundFrames = 0;
 
                             if (consecutiveSilentFrames >= recorder_system_stop_automatacilly_after_silence_of_ms)

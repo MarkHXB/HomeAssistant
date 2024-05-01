@@ -1,5 +1,4 @@
-﻿using HomeAssistant.Lib.Logger;
-using HomeAssistant.Lib.Utils;
+﻿using HomeAssistant.Lib.Utils;
 using SubSystemComponent;
 using System.Diagnostics;
 
@@ -21,25 +20,22 @@ namespace Runner
         private string? convertOutputToJson;
 
         public RunnerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(@params, dependencies)
-        { }
-
-        public override void Initialize()
+            base(ConfigObject.LogFilePath, @params, dependencies)
         {
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
 
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
         }
 
-        public override async Task TaskObject(CancellationToken cancellationToken)
+        public override void Initialize()
         {
             Params.TryGetValue("runner_system_file_path", out filePath);
             Params.TryGetValue("runner_system_file_name", out fileName);
             Params.TryGetValue("runner_system_arguements", out args);
             Params.TryGetValue("runner_system_dependent_subsystem_output_path", out dependentSubsystemOutputPath);
             Params.TryGetValue("runner_system_dependent_convert_output_path_to_json", out convertOutputToJson);
+        }
 
+        public override async Task TaskObject(CancellationToken cancellationToken)
+        {
             switch (Path.GetExtension(fileName).ToLower())
             {
                 case ".exe":
@@ -97,7 +93,7 @@ namespace Runner
                     process.Start();
 
                     OutputDataReceived(process);
-                    ErrorDataReceived(process); 
+                    ErrorDataReceived(process);
 
                     await process.WaitForExitAsync(cancellationToken);
                 }
@@ -106,7 +102,7 @@ namespace Runner
                     process.Kill();
                     throw;
                 }
-                catch(Exception ex) { }
+                catch (Exception ex) { }
 
             }
         }
@@ -161,7 +157,7 @@ namespace Runner
             using (Process process = new Process())
             {
                 process.StartInfo.FileName = "python";
-                process.StartInfo.Arguments = path+ " "+args;
+                process.StartInfo.Arguments = path + " " + args;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true; // Add redirection to standard error stream

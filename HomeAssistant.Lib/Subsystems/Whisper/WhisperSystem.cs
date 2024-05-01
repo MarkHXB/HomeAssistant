@@ -1,5 +1,4 @@
-﻿using HomeAssistant.Lib.Logger;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using SubSystemComponent;
 using System.Text;
@@ -25,15 +24,13 @@ namespace Whisper
         private GgmlType whisperModel;
 
         public WhisperSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-                  base(@params, dependencies)
-        { }
+     base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+
+        }
+
         public override void Initialize()
         {
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             ConfigObject? config = configHandler.LoadConfig<ConfigObject>();
 
@@ -108,12 +105,12 @@ namespace Whisper
 
         private async Task DownloadModel(string fileName, GgmlType ggmlType)
         {
-            if(!File.Exists(fileName)) 
+            if (!File.Exists(fileName))
             {
                 using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(ggmlType);
                 using var fileWriter = File.OpenWrite(fileName);
                 await modelStream.CopyToAsync(fileWriter);
-            }    
+            }
         }
 
         private void SaveOutputToFile(string data)

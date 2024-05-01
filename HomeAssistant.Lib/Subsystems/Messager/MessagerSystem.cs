@@ -1,13 +1,13 @@
 ﻿using SubSystemComponent;
 using System.Speech.Recognition;
 
-namespace MicrosoftSpeechToText
+namespace Messager
 {
     /// <summary>
     /// Following parameters should pass:
     /// microsoft_speech_to_text_stop_recognition_on_silence_in_ms => after the amount of ms the silence detected and the recognition stopes
     /// </summary>
-    public class MicrosoftSpeechToTextSystem : Subsystem
+    public class MessagerSystem : Subsystem
     {
         private object prompt;
         private StringContent httpContent;
@@ -19,7 +19,7 @@ namespace MicrosoftSpeechToText
         // Params
         private double microsoft_speech_to_text_stop_recognition_on_silence_in_ms;
 
-        public MicrosoftSpeechToTextSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
+        public MessagerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
     base(ConfigObject.LogFilePath, @params, dependencies)
         {
 
@@ -49,21 +49,7 @@ namespace MicrosoftSpeechToText
 
         public override async Task TaskObject(CancellationToken cancellationToken)
         {
-            using (SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine())
-            {
-                // Add a handler for the speech recognized event.  
-                recognizer.SpeechRecognized += recognizer_SpeechRecognized;
-                // Configure input to the speech recognizer.  
-                recognizer.SetInputToDefaultAudioDevice();
-
-                // Start asynchronous, continuous speech recognition.  
-                recognizer.Recognize(TimeSpan.FromMilliseconds(microsoft_speech_to_text_stop_recognition_on_silence_in_ms));
-            }
-        }
-
-        private void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
-        {
-            SaveOutputToFile(e.Result.Text);
+           
         }
 
         #region Private methods

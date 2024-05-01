@@ -29,17 +29,14 @@ namespace LlamaStudio
         private string? llamastudio_userPrompt;
         private string? make_json_object;
 
-        public LlamaStudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) : base(@params, dependencies) { }
+        public LlamaStudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
+             base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+
+        }
 
         public override void Initialize()
         {
-            Console.WriteLine("LLama extension initialization started...");
-
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
@@ -67,21 +64,16 @@ namespace LlamaStudio
             }
 
             bool.TryParse(make_json_object, out makeJsonObjectFromOutput);
-       
-
-            WriteMessageGreen("LLama extension initialized successfully");
         }
 
         public override async Task TaskObject(CancellationToken cancellationToken)
         {
-            await Console.Out.WriteLineAsync("LLama extension running...");
-
             if (string.IsNullOrWhiteSpace(llamastudio_userPrompt))
             {
                 // try to get from file
                 if (!File.Exists(inputTextFilePath))
                 {
-                    LogWarning(nameof(inputTextFilePath) + "is missing");
+                    LogWarning(nameof(inputTextFilePath) + " is missing");
                 }
 
                 llamastudio_userPrompt = File.ReadAllText(inputTextFilePath);
@@ -203,8 +195,6 @@ namespace LlamaStudio
 
             return output;
         }
-
-        public string GetOutputPath() => llamaPathText; 
 
         #region Private methods
 

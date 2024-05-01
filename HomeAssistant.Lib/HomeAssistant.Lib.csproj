@@ -40,7 +40,7 @@
     <None Update="Scripts\speech_recognition\recognizer.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Scripts\whisper\asd3.py">
+    <None Update="Scripts\whisper\whisper.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Scripts\whisper\requirements.txt">

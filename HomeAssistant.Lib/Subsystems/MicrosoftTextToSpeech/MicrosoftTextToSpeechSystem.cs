@@ -1,8 +1,5 @@
-﻿using HomeAssistant.Lib.Logger;
-using Newtonsoft.Json;
-using SubSystemComponent;
+﻿using SubSystemComponent;
 using System.Speech.Synthesis;
-using static LLama_gpt.DTO;
 
 namespace MicrosoftTextToSpeech
 {
@@ -15,17 +12,14 @@ namespace MicrosoftTextToSpeech
         // Config
         private string llamaPathText;
 
-        public MicrosoftTextToSpeechSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) : base(@params, dependencies) { }
+        public MicrosoftTextToSpeechSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
+      base(ConfigObject.LogFilePath, @params, dependencies)
+        {
+
+        }
 
         public override void Initialize()
         {
-            Console.WriteLine("MicrosoftTextToSpeechSystem extension initialization started...");
-
-            LoggerLogicProviderSerilog loggerLogicProviderSerilog = new LoggerLogicProviderSerilog(ConfigObject.LogFilePath);
-
-            LogInformation = loggerLogicProviderSerilog.LogInformation;
-            LogWarning = loggerLogicProviderSerilog.LogWarning;
-
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
@@ -39,8 +33,6 @@ namespace MicrosoftTextToSpeech
             }
 
             llamaPathText = config.LlamaOutputFilePathTxt;
-
-            WriteMessageGreen("MicrosoftTextToSpeechSystem extension initialized successfully");
         }
 
         public override async Task TaskObject(CancellationToken cancellationToken)
