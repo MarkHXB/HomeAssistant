@@ -1,30 +1,19 @@
-﻿using SubSystemComponent;
-using System.Speech.Recognition;
+﻿using HomeAssistant.Lib.Subsystems.Todo;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Newtonsoft.Json;
+using SubSystemComponent;
 
 namespace Messager
 {
-    /// <summary>
-    /// Following parameters should pass:
-    /// microsoft_speech_to_text_stop_recognition_on_silence_in_ms => after the amount of ms the silence detected and the recognition stopes
-    /// </summary>
     public class MessagerSystem : Subsystem
     {
-        private object prompt;
-        private StringContent httpContent;
-        private bool makeJsonObjectFromOutput;
-
-        // Config
-        private string microsoftSpeechToTextFilePath;
-
         // Params
-        private double microsoft_speech_to_text_stop_recognition_on_silence_in_ms;
 
         public MessagerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-    base(ConfigObject.LogFilePath, @params, dependencies)
+      base(ConfigObject.LogFilePath, @params, dependencies)
         {
 
         }
-
         public override void Initialize()
         {
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
@@ -33,47 +22,129 @@ namespace Messager
             // Null checks
             _ = config ?? throw new ArgumentNullException(nameof(config));
 
-            // 1. Check configs are OK
-            if (string.IsNullOrWhiteSpace(config.MicrosoftSpeechToTextFilePath))
-            {
-                throw new ArgumentNullException(nameof(config.MicrosoftSpeechToTextFilePath));
-            }
-
-            microsoftSpeechToTextFilePath = config.MicrosoftSpeechToTextFilePath;
-
-            // Params
-            Params.TryGetValue("microsoft_speech_to_text_stop_recognition_on_silence_in_ms", out string? microsoftSpeechToTextStopRecognitionOnSilenceInMs);
-
-            double.TryParse(microsoftSpeechToTextStopRecognitionOnSilenceInMs, out microsoft_speech_to_text_stop_recognition_on_silence_in_ms);
         }
 
-        public override async Task TaskObject(CancellationToken cancellationToken)
+        public override Task TaskObject(CancellationToken cancellationToken)
         {
-           
+            return Task.Run(() =>
+            {
+                var todos = GetSubsystem(nameof(Todo.TodoSystem))?.GetOutput<IEnumerable<TodoItem>>(false) ?? new List<TodoItem>();
+                var notifications = new List<NotificationObject>();
+
+                foreach (var todo in todos)
+                {
+                    notifications.Add(new NotificationObject(todo.Id, todo.Title, "asd", NotificationTypes.Toast));
+                }
+
+                ShowNotificationsOnLocal(notifications);
+            });   
+        }
+       
+        //private void AddNotification(NotificationObject notification) => AddNewNotificationToFile(notification);
+
+        private void ShowNotificationsOnLocal(List<NotificationObject> notifications)
+        {
+            //var notifications = await LoadNotificationsFromFile();
+
+            foreach (var notification in notifications)
+            {
+                if (!notification.Notified)
+                {
+                    CreateNotification(notification);
+
+                    notification.Notified = true;
+                }
+            }
+
+            //await SaveNotificationsToFile(notifications);
         }
 
         #region Private methods
+        //private async void AddNewNotificationToFile(NotificationObject notification)
+        //{
+        //    try
+        //    {
+        //        var notifications = await LoadNotificationsFromFile();
+        //        var notificationList = new List<NotificationObject>(notifications) { notification };
+        //        await SaveNotificationsToFile(notificationList);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle exceptions (e.g., log the error)
+        //        LogError($"An error occurred while adding a new notification: {ex.Message}");
+        //        throw;
+        //    }
+        //}
 
-        private void SaveOutputToFile(string data)
+        //private async Task SaveNotificationsToFile(IEnumerable<NotificationObject> notificationObjects)
+        //{
+        //    try
+        //    {
+        //        string json = JsonConvert.SerializeObject(notificationObjects, Formatting.Indented);
+        //        using (StreamWriter writer = new StreamWriter(ConfigObject.NotificationsFilePath, false))
+        //        {
+        //            await writer.WriteAsync(json);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle exceptions (e.g., log the error)
+        //        LogError($"An error occurred while saving notifications: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+
+        //private async Task<IEnumerable<NotificationObject>> LoadNotificationsFromFile()
+        //{
+        //    try
+        //    {
+        //        using (StreamReader reader = new StreamReader(ConfigObject.NotificationsFilePath))
+        //        {
+        //            string json = await reader.ReadToEndAsync();
+        //            return JsonConvert.DeserializeObject<IEnumerable<NotificationObject>>(json) ?? new List<NotificationObject>();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle exceptions (e.g., log the error)
+        //        LogError($"An error occurred while loading notifications: {ex.Message}");
+        //        return new List<NotificationObject>();
+        //    }
+        //}
+
+        private void CreateNotification(NotificationObject notification)
         {
-            if (string.IsNullOrWhiteSpace(microsoftSpeechToTextFilePath))
+            switch (notification.Type)
             {
-                throw new ArgumentException("AppInfo.MicrosoftSpeechToTextFilePath must not be null or empty.");
+                case NotificationTypes.Toast:
+                    CreateToastNotification(notification);
+                    break;
+                case NotificationTypes.Assistant:
+                    CreateAssistantNotificationAsync(notification).ConfigureAwait(false);
+                    break;
+                case NotificationTypes.Remotes:
+                    CreateRemotesNotificationAsync(notification).ConfigureAwait(false);
+                    break;
             }
-
-            if (string.IsNullOrWhiteSpace(data))
-            {
-                LogWarning("Speech recognition not recognized any voice");
-                return;
-            }
-
-            File.WriteAllText(microsoftSpeechToTextFilePath, data);
         }
 
-        public string GetOutputFromFile()
+        private void CreateToastNotification(NotificationObject notification)
         {
-            return File.ReadAllText(microsoftSpeechToTextFilePath);
+            
         }
+
+        private async Task CreateAssistantNotificationAsync(NotificationObject notification)
+        {
+            // Implement assistant notification logic here
+        }
+
+        private async Task CreateRemotesNotificationAsync(NotificationObject notification)
+        {
+            // Implement remotes notification logic here
+        }
+
+      
+
 
         #endregion
     }

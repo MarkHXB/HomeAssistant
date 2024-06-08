@@ -23,7 +23,7 @@ namespace RecorderMicrophone
 
         public RecorderMicrophoneSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
     base(ConfigObject.LogFilePath, @params, dependencies)
-        {
+        { 
         }
 
         public override void Initialize()
@@ -117,6 +117,9 @@ namespace RecorderMicrophone
                 }
             };
 
+
+            Console.Beep();
+
             // Start audio capture
             _wasapiCapture.StartRecording();
 
@@ -126,6 +129,8 @@ namespace RecorderMicrophone
             {
                 // Wait until cancellation is requested or the timer elapses
                 await WaitUntilConditionIsMet(cancellationToken, () => isRecordingSilence);
+
+                Console.Beep();
             }
             catch (Exception ex)
             {

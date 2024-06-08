@@ -12,8 +12,8 @@ namespace LlamaStudio
 
         public string LlamaServerPath { get; private set; } = "http://localhost:1234/v1/chat/completions";
 
-        public string LlamaOutputFilePathTxt { get; set; } = Path.Combine(AppFolder, "LlamaOutputFilePathTxt.txt");
-        public string LlamaOutputFilePathJson { get; private set; } = Path.Combine(AppFolder, "LlamaOutputFilePathJson.json");
-        public string InputTextFilePath { get; private set; } = Path.Combine(AppFolder, "llama_input.txt");
+        public string LlamaOutputFilePathTxt { get; set; } = Path.Combine(AppFolder, "output.txt");
+        public string LlamaOutputFilePathJson { get; private set; } = Path.Combine(AppFolder, "output.json");
+        public string InputTextFilePath { get; private set; } = Path.Combine(AppFolder, "input.txt");
     }
 }

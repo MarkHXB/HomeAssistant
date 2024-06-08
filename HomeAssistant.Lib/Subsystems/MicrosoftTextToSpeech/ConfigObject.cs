@@ -10,7 +10,7 @@ namespace MicrosoftTextToSpeech
         public static string LogFilePath = Path.Combine(MasterSystemInfo.LogFolderPath, $"{AppName}.log");
 
         // Shared property
-        public string LlamaOutputFilePathTxt { get; set; } = Path.Combine(AppFolder, "LlamaOutputFilePathTxt.txt");
+        public string LlamaOutputFilePathTxt { get; set; } = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, "LlamaStudio", "output.txt");
 
     }
 }

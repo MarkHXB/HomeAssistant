@@ -1,15 +1,15 @@
 ﻿using SubSystemComponent;
 
-namespace MicrosoftSpeechToText
+namespace Todo
 {
     internal class ConfigObject
     {
-        public const string AppName = "MicrosoftSpeechToText"; 
+        public const string AppName = "Todo";
         public static string AppFolder = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, AppName);
-
         public static string ConfigFilePath = Path.Combine(AppFolder, "config.json");
         public static string LogFilePath = Path.Combine(MasterSystemInfo.LogFolderPath, $"{AppName}.log");
-        public string MicrosoftSpeechToTextFilePath { get; set; } = Path.Combine(AppFolder, "output.txt");
 
+        public static string SQLiteDatabaseName = "store.db";
+        public static string SQLiteFilePath = Path.Combine(AppFolder, SQLiteDatabaseName);
     }
 }

@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeAssistant.Lib", "HomeAs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeAssistant.Cli", "HomeAssistant.Cli\HomeAssistant.Cli.csproj", "{1BE1DF09-2E98-4769-8C6F-ED9109E68F42}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeAssistant.Forms", "HomeAssistant.Forms\HomeAssistant.Forms.csproj", "{DEDFBFB4-32AE-4AA6-A8DC-A797597B184D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssistant.WebApi", "HomeAssistant.WebApi\HomeAssistant.WebApi.csproj", "{3811A69E-3CF6-47D7-AF47-2F5AECBB4CC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{1BE1DF09-2E98-4769-8C6F-ED9109E68F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BE1DF09-2E98-4769-8C6F-ED9109E68F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BE1DF09-2E98-4769-8C6F-ED9109E68F42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEDFBFB4-32AE-4AA6-A8DC-A797597B184D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEDFBFB4-32AE-4AA6-A8DC-A797597B184D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEDFBFB4-32AE-4AA6-A8DC-A797597B184D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEDFBFB4-32AE-4AA6-A8DC-A797597B184D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3811A69E-3CF6-47D7-AF47-2F5AECBB4CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3811A69E-3CF6-47D7-AF47-2F5AECBB4CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3811A69E-3CF6-47D7-AF47-2F5AECBB4CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3811A69E-3CF6-47D7-AF47-2F5AECBB4CC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

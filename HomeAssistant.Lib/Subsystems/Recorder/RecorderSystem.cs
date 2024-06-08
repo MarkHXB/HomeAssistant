@@ -22,7 +22,6 @@ namespace Recorder
         public RecorderSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
      base(ConfigObject.LogFilePath, @params, dependencies)
         {
-
         }
 
         public override void Initialize()

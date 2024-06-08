@@ -59,12 +59,14 @@ namespace SoundAudio
                         playbackCompletedTcs.TrySetResult(true);
                     };
 
+                    LogInformation("Press ESC if you want to interrupt audio");
                     // Wait asynchronously until playback is finished or cancellation is requested
                     while (true)
                     {
-                        if (cancellationToken.IsCancellationRequested)
+                        if (cancellationToken.IsCancellationRequested || lookinForEscape())
                         {
                             _waveOutEvent.Stop();
+                            LogInformation($"{nameof(SoundAudio)} cancelled by the user.");
                             break;
                         }
 
@@ -82,6 +84,19 @@ namespace SoundAudio
                     await playbackCompletedTcs.Task;
                 }
             }
+        }
+
+        private bool lookinForEscape()
+        {
+            if (Console.In.Peek() != -1)
+            {
+                 if(Console.ReadKey(true).Key == ConsoleKey.Escape)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

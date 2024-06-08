@@ -1,0 +1,25 @@
+Description:
+A ToDo application allows users to manage their tasks by adding, editing, and deleting items. It provides a clear and organized interface to track and prioritize daily activities efficiently.
+Commands:
+[
+GET, GETALL, UPDATE, DELETE, ADD
+]
+Struct:
+(
+public string Id { get; set; }
+public string Title { get; set; }
+public DateTime DueDate { get; set; }
+public DateTime ReminderDate { get; set; }
+public bool IsCompleted { get; set; }
+public bool IsNotifiedDueDate { get; set; }
+public bool IsNotifiedReminderDate { get; set; }
+)
+ResultObject:
+(
+todo_system_command=[COMMAND]
+todo_system_id=[Id]
+todo_system_new_item_title=[Title]
+todo_system_new_item_duetodate=[DueDate]
+todo_system_new_item_reminderdate=[ReminderDate]
+todo_system_new_item_iscompleted=[IsComplete]
+)

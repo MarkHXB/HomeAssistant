@@ -1,5 +1,4 @@
-﻿using HomeAssistant.Lib.Logger;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SubSystemComponent;
 using System.Text;
 using static LLama_gpt.DTO;
@@ -58,6 +57,8 @@ namespace LlamaStudio
             Params.TryGetValue("llamastudio_user_prompt", out llamastudio_userPrompt);
             Params.TryGetValue("make_json_object", out make_json_object);
 
+
+
             if (string.IsNullOrWhiteSpace(llamastudio_systemMessage))
             {
                 throw new ArgumentNullException(nameof(llamastudio_systemMessage));
@@ -85,7 +86,7 @@ namespace LlamaStudio
                     new { role = "system", content = llamastudio_systemMessage },
                     new { role = "user", content = llamastudio_userPrompt },
                 },
-                    temperature = 0.7,
+                    temperature = 0.2,
                     max_tokens = -1,
                     stream = false
                 };
@@ -218,11 +219,13 @@ namespace LlamaStudio
 
             ChatCompletion completion = JsonConvert.DeserializeObject<ChatCompletion>(data);
 
+            AddOutput<string>(completion.Choices[0].Message.Content);
+
             if (completion != null && makeJsonObjectFromOutput)
             {
                 File.WriteAllText(llamaOutputFilePathJson, completion.Choices[0].Message.Content);
             }
-            else if(completion != null)
+            else if (completion != null)
             {
                 File.WriteAllText(llamaPathText, completion.Choices[0].Message.Content);
             }
