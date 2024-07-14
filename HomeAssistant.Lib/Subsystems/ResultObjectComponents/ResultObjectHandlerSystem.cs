@@ -18,7 +18,12 @@ namespace ResultObjectComponents
         public override async Task TaskObject(CancellationToken cancellationToken)
         {
             var @params = new Dictionary<string, string>();
-            var resultObject = GetSubsystem("ResultObjectResolverSystem").GetOutput<ResultObject>(false);
+            var resultObject = GetSubsystem("ResultObjectResolverSystem")?.GetOutput<ResultObjectTodoSystem>(false, defaultValue: null);
+
+            if(resultObject == null)
+            {
+                return;
+            }
 
             switch (resultObject)
             {

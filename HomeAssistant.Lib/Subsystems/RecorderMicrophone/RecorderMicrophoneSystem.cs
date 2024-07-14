@@ -1,6 +1,7 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using SubSystemComponent;
+using System.Runtime.InteropServices;
 
 namespace RecorderMicrophone
 {
@@ -21,9 +22,16 @@ namespace RecorderMicrophone
         private double recorder_system_wait_for_exit_in_ms;
         private double recorder_system_stop_automatacilly_after_silence_of_ms;
 
+        // Props
+        public bool RecordWhileHoldingLAlt {  get; set; }
+
+        [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int key);
+
+
         public RecorderMicrophoneSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
     base(ConfigObject.LogFilePath, @params, dependencies)
-        { 
+        {
         }
 
         public override void Initialize()
@@ -171,6 +179,26 @@ namespace RecorderMicrophone
 
         private async Task WaitUntilConditionIsMet(CancellationToken cancellationToken, Func<bool> condition)
         {
+            if (RecordWhileHoldingLAlt)
+            {
+                await Task.Delay(500); // time for user to be prepared for
+
+                while (true && !cancellationToken.IsCancellationRequested)
+                {            
+                    if ((GetAsyncKeyState(0xA4) & 0x8000) <= 0) // user not holds space key
+                    { 
+                        //await Console.Out.WriteLineAsync("Elengedtem");
+                        break;
+                    }
+                    //else
+                    //{
+                    //    await Console.Out.WriteLineAsync("Hold");
+                    //}
+
+                    await Task.Delay(100);
+                }             
+            }
+
             if (recorder_system_wait_for_exit_in_ms != 0 && condition != null)
             {
                 System.Timers.Timer timer = new System.Timers.Timer(recorder_system_wait_for_exit_in_ms);

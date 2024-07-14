@@ -235,9 +235,17 @@ namespace HomeAssistant.Forms
             {
                 return;
             }
-
-            TodoItem todo = listBox.Items[e.Index] as TodoItem;
-
+            TodoItem todo = new TodoItem();
+            
+            try
+            {
+                todo = listBox.Items[e.Index] as TodoItem;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
             // Set the default background and foreground colors
             e.DrawBackground();
             Brush textBrush = SystemBrushes.ControlText;

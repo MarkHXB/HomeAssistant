@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HomeAssistant.Lib.Utils;
+using Newtonsoft.Json;
 using SubSystemComponent;
 using System.Text;
 using static LLama_gpt.DTO;
@@ -9,6 +10,7 @@ namespace LlamaStudio
     /// Following parameters should pass:
     /// <para>llamastudio_system_message => only the folder path without the file</para>
     /// <para>llamastudio_userPrompt => the filename you want to run</para>
+    /// <para>llamastudio_screenreader(Optional) => Boolean value if yes then llamastudio will concat two input text file content</para>
     /// <para>(Optional) make_json_object => If further analysis set to before output and convert it to json object then save it to .json</para>
     /// </summary>
     public class LlamaStudioSystem : Subsystem
@@ -16,6 +18,8 @@ namespace LlamaStudio
         private object prompt;
         private StringContent httpContent;
         private bool makeJsonObjectFromOutput;
+        private bool llamastudioScreenreader;
+        private string llamastudioScreenReader;
 
         // Config
         private string llamaServerPath;
@@ -27,6 +31,7 @@ namespace LlamaStudio
         private string? llamastudio_systemMessage;
         private string? llamastudio_userPrompt;
         private string? make_json_object;
+        private string? llamastudio_screenreader;
 
         public LlamaStudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
              base(ConfigObject.LogFilePath, @params, dependencies)
@@ -56,6 +61,7 @@ namespace LlamaStudio
             Params.TryGetValue("llamastudio_system_message", out llamastudio_systemMessage);
             Params.TryGetValue("llamastudio_user_prompt", out llamastudio_userPrompt);
             Params.TryGetValue("make_json_object", out make_json_object);
+            Params.TryGetValue("llamastudio_screenreader", out llamastudio_screenreader);
 
 
 
@@ -65,6 +71,7 @@ namespace LlamaStudio
             }
 
             bool.TryParse(make_json_object, out makeJsonObjectFromOutput);
+            bool.TryParse(llamastudio_screenreader, out llamastudioScreenreader);
         }
 
         public override async Task TaskObject(CancellationToken cancellationToken)
@@ -77,19 +84,41 @@ namespace LlamaStudio
                     LogWarning(nameof(inputTextFilePath) + " is missing");
                 }
 
-                llamastudio_userPrompt = File.ReadAllText(inputTextFilePath);
-
-                prompt = new
+                if (llamastudioScreenreader)
                 {
-                    messages = new[]
-               {
+                    llamastudio_userPrompt = File.ReadAllText(inputTextFilePath);
+                    llamastudioScreenReader = File.ReadAllText(SharedPaths.LLamaInputScreenReaderFilePath);
+
+                    prompt = new
+                    {
+                        messages = new[]
+                   {
+                    new { role = "system", content = llamastudio_systemMessage },
+                    new { role = "user", content = llamastudio_userPrompt },
+                        new { role = "user", content = llamastudioScreenReader },
+                },
+                        temperature = 0.2,
+                        max_tokens = -1,
+                        stream = false
+                    };
+                }
+                else
+                {
+                    llamastudio_userPrompt = File.ReadAllText(inputTextFilePath);
+
+                    prompt = new
+                    {
+                        messages = new[]
+                   {
                     new { role = "system", content = llamastudio_systemMessage },
                     new { role = "user", content = llamastudio_userPrompt },
                 },
-                    temperature = 0.2,
-                    max_tokens = -1,
-                    stream = false
-                };
+                        temperature = 0.2,
+                        max_tokens = -1,
+                        stream = false
+                    };
+                }
+               
 
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(prompt);
                 httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");

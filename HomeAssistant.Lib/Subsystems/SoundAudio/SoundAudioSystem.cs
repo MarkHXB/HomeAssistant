@@ -61,24 +61,24 @@ namespace SoundAudio
 
                     LogInformation("Press ESC if you want to interrupt audio");
                     // Wait asynchronously until playback is finished or cancellation is requested
-                    while (true)
-                    {
-                        if (cancellationToken.IsCancellationRequested || lookinForEscape())
-                        {
-                            _waveOutEvent.Stop();
-                            LogInformation($"{nameof(SoundAudio)} cancelled by the user.");
-                            break;
-                        }
+                    //while (true)
+                    //{
+                    //    if (cancellationToken.IsCancellationRequested || lookinForEscape())
+                    //    {
+                    //        _waveOutEvent.Stop();
+                    //        LogInformation($"{nameof(SoundAudio)} cancelled by the user.");
+                    //        break;
+                    //    }
 
-                        // Check if playback is completed
-                        if (_waveOutEvent.PlaybackState == PlaybackState.Stopped)
-                        {
-                            break;
-                        }
+                    //    // Check if playback is completed
+                    //    if (_waveOutEvent.PlaybackState == PlaybackState.Stopped)
+                    //    {
+                    //        break;
+                    //    }
 
-                        // Await a short delay to avoid busy waiting
-                        await Task.Delay(100);
-                    }
+                    //    // Await a short delay to avoid busy waiting
+                    //    await Task.Delay(100);
+                    //}
 
                     // Await playback completion or cancellation
                     await playbackCompletedTcs.Task;

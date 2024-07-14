@@ -102,7 +102,7 @@ namespace HomeAssistant.Lib.Features
                 while (true)
                 {
                     await SubsystemPool.RunAllAsync(cancellationToken);
-                    feature.Output = SharedObject.LlamaOutputFilePathTxt;
+                    feature.Output = LlamaStudio.SharedObject.LlamaOutputFilePathTxt;
 
                     Thread.Sleep(cyclicOfRunningInMilliseconds);
                 }

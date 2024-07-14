@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using SubSystemComponent;
+using System.Timers;
 
 namespace Recorder
 {
@@ -14,6 +15,7 @@ namespace Recorder
         private WaveFileWriter _waveFileWriter;
 
         private string recorderOutputPath = string.Empty;
+        private string recorderOutputPathFileName = string.Empty;
 
         // Parameters
         private double recorder_system_wait_for_exit_in_ms;
@@ -34,7 +36,7 @@ namespace Recorder
                 throw new ArgumentException("Not provided audio file to analyze, please add an audio's file path to args.");
             }
 
-            recorderOutputPath = config.RecorderOutputPath;
+            recorderOutputPathFileName = config.RecorderOutputPath;
 
             // Parameters
             Params.TryGetValue("recorder_system_wait_for_exit_in_ms", out string? recorderSystemWaitForExitInMs);
@@ -46,6 +48,8 @@ namespace Recorder
 
         public override async Task TaskObject(CancellationToken cancellationToken)
         {
+            recorderOutputPath = $"{recorderOutputPathFileName}_{DateTime.Now.Ticks}.wav";
+
             // Create WasapiLoopbackCapture to capture system audio
             _wasapiLoopback = new WasapiLoopbackCapture();
 
@@ -60,7 +64,7 @@ namespace Recorder
 
 
             // Variables to track silence detection
-            bool isRecordingSilence = false;
+            bool isRecordingSilence = recorder_system_stop_automatacilly_after_silence_of_ms == 0;
             const int soundResetWindow = 3; // Reset the silence state if sound is detected within this window before silenceThreshold
             int consecutiveSilentFrames = 0;
             int consecutiveSoundFrames = 0;
@@ -135,6 +139,11 @@ namespace Recorder
                 _waveFileWriter.Dispose();
                 _wasapiLoopback.Dispose();
 
+                //string filename = Path.GetFileNameWithoutExtension(recorderOutputPath);
+                //filename = "processed_" + filename+ ".wav";
+                //string path = Path.GetDirectoryName(recorderOutputPath);
+                //File.Move(recorderOutputPath, Path.Combine(path, filename));
+
                 LogInformation("Recording has stopped.");
 
                 LogInformation("Saved here: " + recorderOutputPath);
@@ -162,7 +171,7 @@ namespace Recorder
 
         private async Task WaitUntilConditionIsMet(CancellationToken cancellationToken, Func<bool> condition)
         {
-            if (recorder_system_wait_for_exit_in_ms != 0 && condition != null)
+            if (recorder_system_wait_for_exit_in_ms != 0 && recorder_system_stop_automatacilly_after_silence_of_ms != 0)
             {
                 System.Timers.Timer timer = new System.Timers.Timer(recorder_system_wait_for_exit_in_ms);
                 timer.Start();
@@ -178,17 +187,7 @@ namespace Recorder
             }
             else if (recorder_system_wait_for_exit_in_ms != 0)
             {
-                System.Timers.Timer timer = new System.Timers.Timer(recorder_system_wait_for_exit_in_ms);
-                timer.Start();
-
-                while (!cancellationToken.IsCancellationRequested && timer.Interval >= recorder_system_wait_for_exit_in_ms)
-                {
-                    // Check condition every 100 milliseconds
-                    await Task.Delay(100);
-                }
-
-                timer.Stop();
-                timer.Dispose();
+                await Task.Delay((int)recorder_system_wait_for_exit_in_ms);             
             }
             else if (condition != null)
             {

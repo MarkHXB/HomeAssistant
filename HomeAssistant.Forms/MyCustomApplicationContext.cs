@@ -4,7 +4,7 @@ using RecorderMicrophone;
 using Runner;
 using SoundAudio;
 using SubSystemComponent;
-using Todo;
+using System.Runtime.InteropServices;
 
 namespace HomeAssistant.Forms
 {
@@ -22,6 +22,7 @@ namespace HomeAssistant.Forms
             trayIcon.Visible = true;
 
             contextMenuStrip.Items.Add("Cori", null, LoadCori);
+            contextMenuStrip.Items.Add("Imre", null, LoadImre);
             contextMenuStrip.Items.Add("Screen Read", null, btnCapture_Click);
             contextMenuStrip.Items.Add("ToDos", null, btnAddTodo_Click);
             contextMenuStrip.Items.Add("Exit", null, OnExit);
@@ -36,6 +37,53 @@ namespace HomeAssistant.Forms
             }
         }
 
+        private async void LoadImre(object sender, EventArgs e)
+        {
+            Dictionary<string, string> @params = new()
+            {
+                {"recorder_system_wait_for_exit_in_ms", "2000"},
+                {"recorder_system_stop_automatacilly_after_silence_of_ms", "3000"},
+            };
+
+            var recorderMicrophoneSystem = SubSystemFactory<RecorderMicrophoneSystem>.Create(@params);
+
+            @params = new()
+            {
+                 {"runner_system_file_path", @"Scripts/whisper"},
+                 {"runner_system_file_name", @"whisper.py"},
+                 {"runner_system_arguements", $@"{RecorderMicrophone.SharedObject.RecorderOutputPath} {LlamaStudio.SharedObject.LLamaInputTextFile} False hu"},
+            };
+
+            var speechRecognitionSystem = SubSystemFactory<RunnerSystem>.Create(@params, recorderMicrophoneSystem);
+
+            @params = new()
+            {
+                {"llamastudio_system_message", "Te egy magyarul beszélő mesterséges intelligencia vagy."},
+            };
+
+            var llamaSystem = SubSystemFactory<LlamaStudioSystem>.Create(@params, speechRecognitionSystem);
+
+            @params = new()
+            {
+                 {"runner_system_file_path", @"C:\Users\sasli\Downloads\piper_windows_amd64\piper"},
+                 {"runner_system_file_name", @"piper.exe"},
+                 {"runner_system_arguements", @"-m C:\Users\sasli\Downloads\piper_windows_amd64\piper\hu_HU-imre-medium.onnx -f C:\Users\sasli\Downloads\piper_windows_amd64\piper\output.wav --json-input "},
+                 {"runner_system_dependent_subsystem_output_path", LlamaStudio.SharedObject.LlamaOutputFilePathTxt },
+                 {"runner_system_dependent_convert_output_path_to_json", "true" }
+            };
+
+            var speechSynthesisSystem = SubSystemFactory<RunnerSystem>.Create(@params, llamaSystem);
+
+            @params = new();
+
+            var soundAudio = SubSystemFactory<SoundAudioSystem>.Create(@params, speechSynthesisSystem);
+
+            SubsystemPool.AddSubsystem(soundAudio);
+
+            await SubsystemPool.RunAllAsync(new CancellationToken());
+
+        } // ai assistant like Jarvis - Hungarian
+
         private async void LoadCori(object sender, EventArgs e)
         {
             Dictionary<string, string> @params = new()
@@ -45,6 +93,8 @@ namespace HomeAssistant.Forms
             };
 
             var recorderMicrophoneSystem = SubSystemFactory<RecorderMicrophoneSystem>.Create(@params);
+
+            recorderMicrophoneSystem.RecordWhileHoldingLAlt = true;
 
             @params = new()
             {
@@ -87,9 +137,9 @@ namespace HomeAssistant.Forms
             trayIcon.Visible = false;
             Application.Exit();
         }
-
+       
         private async void btnCapture_Click(object sender, EventArgs e)
-        {
+        {     
             // Define the path where you want to save the screenshot
             string savePath = @"C:\temp\asd.png";
 
@@ -97,13 +147,12 @@ namespace HomeAssistant.Forms
             {
                 form1.ShowDialog();
             }
-            return;
             // run screen read - gether text from pic
             Dictionary<string, string> @params = new()
             {
                  {"runner_system_file_path", @"C:\Users\sasli\source\repos\HomeAssistant\HomeAssistant.Lib\Scripts\screenread"},
                  {"runner_system_file_name", @"main.py"},
-                 {"runner_system_arguements", @$"{savePath} {SharedPaths.LlamaInputTextFilePath}"},
+                 {"runner_system_arguements", @$"{savePath} {SharedPaths.LLamaInputScreenReaderFilePath}"},
             };
             var screenReadSystem = SubSystemFactory<RunnerSystem>.Create(@params);
 
@@ -130,6 +179,7 @@ namespace HomeAssistant.Forms
             @params = new()
             {
                 {"llamastudio_system_message", $"You are an AI assistant called Cori. Answer shortly! Only answer not more questions."},
+                {"llamastudio_screenreader", "true"},
                 //{"llamastudio_system_message", $"You are an AI assistant called Cori. Answer shortly! What is the meaning of this?"},// add the recorded text so, What is the meaning of this? and the readed text from screen as user_prompt
             };
 

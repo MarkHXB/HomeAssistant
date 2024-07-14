@@ -1,6 +1,6 @@
 ﻿namespace ResultObjectComponents
 {
-    public abstract class ResultObject
+    public class ResultObject
     {
     }
 }

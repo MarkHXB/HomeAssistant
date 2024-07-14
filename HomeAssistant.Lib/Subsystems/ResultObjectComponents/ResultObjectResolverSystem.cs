@@ -25,6 +25,7 @@ namespace ResultObjectComponents
 
             if (string.IsNullOrWhiteSpace(resultObjectInput))
             {
+                return;
                 throw new ArgumentNullException(nameof(resultObjectInput));
             }
 
@@ -49,9 +50,7 @@ namespace ResultObjectComponents
                 resultObjectTodoSystem.ReminderDate = reminderDate;
                 resultObjectTodoSystem.DueDate = dueDate;
 
-                AddOutput(resultObjectTodoSystem);
-
-
+                AddOutput<ResultObjectTodoSystem>(resultObjectTodoSystem);
             }
         }
 

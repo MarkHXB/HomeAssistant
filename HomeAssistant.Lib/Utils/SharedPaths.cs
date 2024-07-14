@@ -6,7 +6,8 @@ namespace HomeAssistant.Lib.Utils
     {
         public static string ScreenReaderOutputFilePath = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, "ScreenReader", "output.txt");
         public static string LlamaInputTextFilePath = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, "LlamaStudio", "input.txt");
-    
+        public static string LLamaInputScreenReaderFilePath = Path.Combine(MasterSystemInfo.Appdata, MasterSystemInfo.AppName, "LlamaStudio", "input2.txt");
+
         public static string GetSubsystemOutputPath(string subsystemName)
         {
             if (string.IsNullOrWhiteSpace(subsystemName))

@@ -2,7 +2,7 @@
 using SubSystemComponent;
 using System.Diagnostics;
 
-namespace Runner
+namespace Daemon
 {
     /// <summary>
     /// Following parameters should pass:
@@ -11,7 +11,7 @@ namespace Runner
     /// <para>runner_system_arguements => arguements which are passed to the run file</para>
     /// <para>runner_system_dependent_subsystem_output_path => different subsystem's output file path to read as input to process</para>
     /// </summary>
-    public class RunnerSystem : Subsystem
+    public class DaemonSystem : Subsystem
     {
         private string? filePath;
         private string? fileName;
@@ -19,7 +19,7 @@ namespace Runner
         private string? dependentSubsystemOutputPath;
         private string? convertOutputToJson;
 
-        public RunnerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
+        public DaemonSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
             base(ConfigObject.LogFilePath, @params, dependencies)
         {
 
@@ -46,9 +46,6 @@ namespace Runner
                     break;
                 case ".py":
                     await ExecutePythonScriptAsync(cancellationToken);
-                    break;
-                case ".cmd":
-                    await ExecuteCommandAsync(cancellationToken);
                     break;
                 default:
                     throw new ArgumentException($"Unsupported file extension '{Path.GetExtension(filePath)}'.");
@@ -181,47 +178,6 @@ namespace Runner
                 }
             }
         }
-
-        private async Task ExecuteCommandAsync(CancellationToken cancellationToken)
-        {
-            if (CurrentPlatform == SupportedPlatforms.ANDROID)
-                throw new NotSupportedException("Executing .EXE files is not supported on Android.");
-
-            string? command = GetSubsystem("LlamaStudioSystem")?.GetOutput<string>(false) ?? string.Empty;
-
-            if (string.IsNullOrWhiteSpace(command))
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
-
-            using (Process process = new Process())
-            {
-                process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.Arguments = $"/c \"{command}\"";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.CreateNoWindow = false;
-
-                try
-                {
-                    process.Start();
-
-                    OutputDataReceived(process);
-                    ErrorDataReceived(process);
-
-                    await process.WaitForExitAsync(cancellationToken);
-                }
-                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-                {
-                    process.Kill();
-                    throw;
-                }
-                catch (Exception ex) { }
-
-            }
-        }
-
 
         private void OutputDataReceived(Process process)
         {
