@@ -25,8 +25,17 @@ namespace HomeAssistant.Forms
             contextMenuStrip.Items.Add("Imre", null, LoadImre);
             contextMenuStrip.Items.Add("Screen Read", null, btnCapture_Click);
             contextMenuStrip.Items.Add("ToDos", null, btnAddTodo_Click);
+            contextMenuStrip.Items.Add("Money Tracking", null, btnMoneyTracker_Click);
             contextMenuStrip.Items.Add("Exit", null, OnExit);
             trayIcon.ContextMenuStrip = contextMenuStrip;
+        }
+
+        private void btnMoneyTracker_Click(object? sender, EventArgs e)
+        {
+            using (MoneyTrackingForm form = new MoneyTrackingForm())
+            {
+                form.ShowDialog();
+            }
         }
 
         private void btnAddTodo_Click(object? sender, EventArgs e)
