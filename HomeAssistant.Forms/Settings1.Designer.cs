@@ -34,5 +34,29 @@ namespace HomeAssistant.Forms {
                 this["TransactionFilePath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaximumOutcomePerMonth {
+            get {
+                return ((int)(this["MaximumOutcomePerMonth"]));
+            }
+            set {
+                this["MaximumOutcomePerMonth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LatestUsedTransactionJson {
+            get {
+                return ((string)(this["LatestUsedTransactionJson"]));
+            }
+            set {
+                this["LatestUsedTransactionJson"] = value;
+            }
+        }
     }
 }

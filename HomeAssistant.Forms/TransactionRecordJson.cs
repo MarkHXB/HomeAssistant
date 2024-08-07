@@ -5,7 +5,7 @@ namespace HomeAssistant.Forms
 
     public class TransactionRecordJson
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Field1 { get; set; }
         public string Field2 { get; set; }
         public int Field3 { get; set; }

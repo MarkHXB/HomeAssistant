@@ -30,6 +30,8 @@
         {
             components = new System.ComponentModel.Container();
             panel1 = new Panel();
+            label2 = new Label();
+            searchTxtBox = new TextBox();
             shouldUpdateExportLbl = new Label();
             label5 = new Label();
             label4 = new Label();
@@ -40,10 +42,14 @@
             panel4 = new Panel();
             statusLbl = new Label();
             panel2 = new Panel();
+            assignCategoriesBtn = new Button();
             categoryList = new CheckedListBox();
             addCategoryBtn = new Button();
             panel3 = new Panel();
-            transactionList = new ListBox();
+            transactionList = new CheckedListBox();
+            menuStrip1 = new MenuStrip();
+            originalTransactionsToolStripMenuItem = new ToolStripMenuItem();
+            categorizedTransactionsToolStripMenuItem = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             contextMenuStrip1 = new ContextMenuStrip(components);
             renameToolStripMenuItem = new ToolStripMenuItem();
@@ -52,11 +58,14 @@
             panel4.SuspendLayout();
             panel2.SuspendLayout();
             panel3.SuspendLayout();
+            menuStrip1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
             // 
+            panel1.Controls.Add(label2);
+            panel1.Controls.Add(searchTxtBox);
             panel1.Controls.Add(shouldUpdateExportLbl);
             panel1.Controls.Add(label5);
             panel1.Controls.Add(label4);
@@ -70,12 +79,29 @@
             panel1.Size = new Size(800, 77);
             panel1.TabIndex = 0;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(486, 53);
+            label2.Name = "label2";
+            label2.Size = new Size(42, 15);
+            label2.TabIndex = 7;
+            label2.Text = "Search";
+            // 
+            // searchTxtBox
+            // 
+            searchTxtBox.Location = new Point(548, 51);
+            searchTxtBox.Name = "searchTxtBox";
+            searchTxtBox.Size = new Size(240, 23);
+            searchTxtBox.TabIndex = 1;
+            searchTxtBox.TextChanged += searchTxtBox_TextChanged;
+            // 
             // shouldUpdateExportLbl
             // 
             shouldUpdateExportLbl.AutoSize = true;
             shouldUpdateExportLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
             shouldUpdateExportLbl.ForeColor = Color.Red;
-            shouldUpdateExportLbl.Location = new Point(577, 35);
+            shouldUpdateExportLbl.Location = new Point(497, 10);
             shouldUpdateExportLbl.Name = "shouldUpdateExportLbl";
             shouldUpdateExportLbl.Size = new Size(69, 25);
             shouldUpdateExportLbl.TabIndex = 6;
@@ -163,6 +189,7 @@
             // 
             // panel2
             // 
+            panel2.Controls.Add(assignCategoriesBtn);
             panel2.Controls.Add(categoryList);
             panel2.Controls.Add(addCategoryBtn);
             panel2.Dock = DockStyle.Left;
@@ -170,6 +197,20 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(191, 351);
             panel2.TabIndex = 4;
+            // 
+            // assignCategoriesBtn
+            // 
+            assignCategoriesBtn.BackColor = Color.FromArgb(224, 224, 224);
+            assignCategoriesBtn.Dock = DockStyle.Bottom;
+            assignCategoriesBtn.FlatAppearance.BorderColor = Color.White;
+            assignCategoriesBtn.ForeColor = Color.Blue;
+            assignCategoriesBtn.Location = new Point(0, 297);
+            assignCategoriesBtn.Name = "assignCategoriesBtn";
+            assignCategoriesBtn.Size = new Size(191, 27);
+            assignCategoriesBtn.TabIndex = 2;
+            assignCategoriesBtn.Text = "Assign categeroies";
+            assignCategoriesBtn.UseVisualStyleBackColor = false;
+            assignCategoriesBtn.Click += assignCategoriesBtn_Click;
             // 
             // categoryList
             // 
@@ -196,6 +237,7 @@
             // panel3
             // 
             panel3.Controls.Add(transactionList);
+            panel3.Controls.Add(menuStrip1);
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(191, 77);
             panel3.Name = "panel3";
@@ -205,14 +247,38 @@
             // transactionList
             // 
             transactionList.Dock = DockStyle.Fill;
+            transactionList.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
             transactionList.FormattingEnabled = true;
-            transactionList.ItemHeight = 15;
-            transactionList.Location = new Point(0, 0);
+            transactionList.Location = new Point(0, 24);
             transactionList.Name = "transactionList";
-            transactionList.Size = new Size(609, 351);
+            transactionList.Size = new Size(609, 327);
             transactionList.TabIndex = 0;
-            transactionList.DrawItem += transactionList_DrawItem;
             transactionList.SelectedIndexChanged += transactionList_SelectedIndexChanged;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { originalTransactionsToolStripMenuItem, categorizedTransactionsToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(609, 24);
+            menuStrip1.TabIndex = 1;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // originalTransactionsToolStripMenuItem
+            // 
+            originalTransactionsToolStripMenuItem.BackColor = Color.PapayaWhip;
+            originalTransactionsToolStripMenuItem.Name = "originalTransactionsToolStripMenuItem";
+            originalTransactionsToolStripMenuItem.Size = new Size(129, 20);
+            originalTransactionsToolStripMenuItem.Text = "Original Transactions";
+            originalTransactionsToolStripMenuItem.Click += originalTransactionsToolStripMenuItem_Click;
+            // 
+            // categorizedTransactionsToolStripMenuItem
+            // 
+            categorizedTransactionsToolStripMenuItem.BackColor = Color.LightBlue;
+            categorizedTransactionsToolStripMenuItem.Name = "categorizedTransactionsToolStripMenuItem";
+            categorizedTransactionsToolStripMenuItem.Size = new Size(150, 20);
+            categorizedTransactionsToolStripMenuItem.Text = "Categorized Transactions";
+            categorizedTransactionsToolStripMenuItem.Click += categorizedTransactionsToolStripMenuItem_Click;
             // 
             // openFileDialog1
             // 
@@ -247,6 +313,7 @@
             Controls.Add(panel2);
             Controls.Add(panel4);
             Controls.Add(panel1);
+            MainMenuStrip = menuStrip1;
             Name = "MoneyTrackingForm";
             Text = "MoneyTrackingForm";
             FormClosed += MoneyTrackingForm_FormClosed;
@@ -257,6 +324,9 @@
             panel4.PerformLayout();
             panel2.ResumeLayout(false);
             panel3.ResumeLayout(false);
+            panel3.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -277,10 +347,17 @@
         private Label label3;
         private CheckedListBox categoryList;
         private Button addCategoryBtn;
-        private ListBox transactionList;
         private OpenFileDialog openFileDialog1;
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem renameToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
+        private CheckedListBox transactionList;
+        private PictureBox pictureBox1;
+        private Label label2;
+        private TextBox searchTxtBox;
+        private Button assignCategoriesBtn;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem originalTransactionsToolStripMenuItem;
+        private ToolStripMenuItem categorizedTransactionsToolStripMenuItem;
     }
 }

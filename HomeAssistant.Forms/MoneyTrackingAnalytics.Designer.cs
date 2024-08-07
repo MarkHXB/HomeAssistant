@@ -28,35 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            formsPlot1 = new ScottPlot.WinForms.FormsPlot();
             backBtn = new Button();
             panel1 = new Panel();
-            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
-            formsPlot3 = new ScottPlot.WinForms.FormsPlot();
             label1 = new Label();
-            label2 = new Label();
             label3 = new Label();
-            listBox1 = new ListBox();
+            historyListBox = new ListBox();
             label4 = new Label();
             incomeLbl = new Label();
-            label6 = new Label();
+            savingLbl = new Label();
             outcomeLbl = new Label();
             label8 = new Label();
-            panel2 = new Panel();
-            checkedListBox1 = new CheckedListBox();
             label9 = new Label();
-            button2 = new Button();
+            addGoalBtn = new Button();
             statusLbl = new Label();
+            goalsList = new ListBox();
+            addSavingToCurrentMonthBtn = new Button();
+            savingsChart = new LiveChartsCore.SkiaSharpView.WinForms.PieChart();
+            balanceChart = new LiveChartsCore.SkiaSharpView.WinForms.PieChart();
+            savingForGoalLbl = new Label();
+            label2 = new Label();
+            addAutomaticSavingPerMBtn = new Button();
+            balanceGoalsFilterChkBox = new CheckBox();
+            balanceGoalsAutoFilterChkBox = new CheckBox();
+            maxOutcomeChart = new LiveChartsCore.SkiaSharpView.WinForms.PieChart();
+            maxOutcomeLbl = new Label();
+            modifyMaxOutcomeBtn = new Button();
+            panel4 = new Panel();
+            label6 = new Label();
+            cartesianChart1 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
+            label5 = new Label();
             SuspendLayout();
-            // 
-            // formsPlot1
-            // 
-            formsPlot1.DisplayScale = 1F;
-            formsPlot1.Location = new Point(52, 326);
-            formsPlot1.Name = "formsPlot1";
-            formsPlot1.Size = new Size(287, 203);
-            formsPlot1.TabIndex = 0;
-            formsPlot1.Load += formsPlot1_Load;
             // 
             // backBtn
             // 
@@ -75,71 +76,46 @@
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(64, 64, 64);
-            panel1.Location = new Point(43, 281);
+            panel1.Location = new Point(43, 502);
             panel1.Name = "panel1";
             panel1.Size = new Size(1279, 3);
             panel1.TabIndex = 2;
-            // 
-            // formsPlot2
-            // 
-            formsPlot2.DisplayScale = 1F;
-            formsPlot2.Location = new Point(409, 302);
-            formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(518, 258);
-            formsPlot2.TabIndex = 3;
-            // 
-            // formsPlot3
-            // 
-            formsPlot3.DisplayScale = 1F;
-            formsPlot3.Location = new Point(991, 326);
-            formsPlot3.Name = "formsPlot3";
-            formsPlot3.Size = new Size(331, 203);
-            formsPlot3.TabIndex = 4;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label1.Location = new Point(165, 302);
+            label1.Location = new Point(96, 524);
             label1.Name = "label1";
             label1.Size = new Size(74, 25);
             label1.TabIndex = 5;
             label1.Text = "Income";
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label2.Location = new Point(613, 287);
-            label2.Name = "label2";
-            label2.Size = new Size(129, 25);
-            label2.TabIndex = 6;
-            label2.Text = "Planed saving";
-            // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label3.Location = new Point(1124, 302);
+            label3.Location = new Point(96, 569);
             label3.Name = "label3";
             label3.Size = new Size(89, 25);
             label3.TabIndex = 7;
             label3.Text = "Outcome";
             // 
-            // listBox1
+            // historyListBox
             // 
-            listBox1.FormattingEnabled = true;
-            listBox1.ItemHeight = 15;
-            listBox1.Location = new Point(1093, 80);
-            listBox1.Name = "listBox1";
-            listBox1.Size = new Size(214, 169);
-            listBox1.TabIndex = 8;
+            historyListBox.FormattingEnabled = true;
+            historyListBox.ItemHeight = 15;
+            historyListBox.Location = new Point(1108, 58);
+            historyListBox.Name = "historyListBox";
+            historyListBox.Size = new Size(214, 244);
+            historyListBox.TabIndex = 8;
+            historyListBox.SelectedIndexChanged += historyListBox_SelectedIndexChanged;
             // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label4.Location = new Point(1163, 40);
+            label4.Location = new Point(1163, 19);
             label4.Name = "label4";
             label4.Size = new Size(71, 25);
             label4.TabIndex = 9;
@@ -150,29 +126,29 @@
             incomeLbl.AutoSize = true;
             incomeLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
             incomeLbl.ForeColor = Color.Green;
-            incomeLbl.Location = new Point(165, 535);
+            incomeLbl.Location = new Point(196, 524);
             incomeLbl.Name = "incomeLbl";
             incomeLbl.Size = new Size(58, 25);
             incomeLbl.TabIndex = 11;
             incomeLbl.Text = "+123";
             // 
-            // label6
+            // savingLbl
             // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
-            label6.ForeColor = Color.Green;
-            label6.Location = new Point(646, 551);
-            label6.Name = "label6";
-            label6.Size = new Size(58, 25);
-            label6.TabIndex = 12;
-            label6.Text = "+123";
+            savingLbl.AutoSize = true;
+            savingLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            savingLbl.ForeColor = Color.Green;
+            savingLbl.Location = new Point(1264, 968);
+            savingLbl.Name = "savingLbl";
+            savingLbl.Size = new Size(58, 25);
+            savingLbl.TabIndex = 12;
+            savingLbl.Text = "+123";
             // 
             // outcomeLbl
             // 
             outcomeLbl.AutoSize = true;
             outcomeLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 238);
             outcomeLbl.ForeColor = Color.Red;
-            outcomeLbl.Location = new Point(1142, 532);
+            outcomeLbl.Location = new Point(196, 569);
             outcomeLbl.Name = "outcomeLbl";
             outcomeLbl.Size = new Size(53, 25);
             outcomeLbl.TabIndex = 13;
@@ -188,77 +164,251 @@
             label8.Size = new Size(0, 18);
             label8.TabIndex = 14;
             // 
-            // panel2
-            // 
-            panel2.BackColor = Color.FromArgb(64, 64, 64);
-            panel2.Location = new Point(1050, 12);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(3, 250);
-            panel2.TabIndex = 3;
-            // 
-            // checkedListBox1
-            // 
-            checkedListBox1.FormattingEnabled = true;
-            checkedListBox1.Location = new Point(185, 58);
-            checkedListBox1.Name = "checkedListBox1";
-            checkedListBox1.Size = new Size(192, 166);
-            checkedListBox1.TabIndex = 15;
-            // 
             // label9
             // 
             label9.AutoSize = true;
             label9.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            label9.Location = new Point(203, 30);
+            label9.Location = new Point(1082, 968);
             label9.Name = "label9";
-            label9.Size = new Size(147, 25);
+            label9.Size = new Size(163, 25);
             label9.TabIndex = 16;
-            label9.Text = "Saving for goals";
+            label9.Text = "Reamining money";
             // 
-            // button2
+            // addGoalBtn
             // 
-            button2.FlatAppearance.BorderColor = Color.LightSeaGreen;
-            button2.FlatAppearance.BorderSize = 3;
-            button2.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            button2.Location = new Point(215, 230);
-            button2.Name = "button2";
-            button2.Size = new Size(124, 32);
-            button2.TabIndex = 17;
-            button2.Text = "+ Add goal";
-            button2.UseVisualStyleBackColor = true;
+            addGoalBtn.FlatAppearance.BorderColor = Color.LightSeaGreen;
+            addGoalBtn.FlatAppearance.BorderSize = 3;
+            addGoalBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            addGoalBtn.Location = new Point(943, 578);
+            addGoalBtn.Name = "addGoalBtn";
+            addGoalBtn.Size = new Size(124, 32);
+            addGoalBtn.TabIndex = 17;
+            addGoalBtn.Text = "+ Add goal";
+            addGoalBtn.UseVisualStyleBackColor = true;
+            addGoalBtn.Click += addGoalBtn_Click;
             // 
             // statusLbl
             // 
             statusLbl.AutoSize = true;
+            statusLbl.Dock = DockStyle.Bottom;
             statusLbl.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 238);
-            statusLbl.Location = new Point(12, 589);
+            statusLbl.Location = new Point(0, 982);
             statusLbl.Name = "statusLbl";
             statusLbl.Size = new Size(0, 20);
             statusLbl.TabIndex = 18;
+            // 
+            // goalsList
+            // 
+            goalsList.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            goalsList.FormattingEnabled = true;
+            goalsList.ItemHeight = 20;
+            goalsList.Location = new Point(1082, 524);
+            goalsList.Name = "goalsList";
+            goalsList.Size = new Size(228, 124);
+            goalsList.TabIndex = 19;
+            goalsList.SelectedIndexChanged += goalsList_SelectedIndexChanged;
+            // 
+            // addSavingToCurrentMonthBtn
+            // 
+            addSavingToCurrentMonthBtn.FlatAppearance.BorderColor = Color.LightSeaGreen;
+            addSavingToCurrentMonthBtn.FlatAppearance.BorderSize = 3;
+            addSavingToCurrentMonthBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            addSavingToCurrentMonthBtn.Location = new Point(825, 616);
+            addSavingToCurrentMonthBtn.Name = "addSavingToCurrentMonthBtn";
+            addSavingToCurrentMonthBtn.Size = new Size(248, 32);
+            addSavingToCurrentMonthBtn.TabIndex = 20;
+            addSavingToCurrentMonthBtn.Text = "+ Add saving for the current month";
+            addSavingToCurrentMonthBtn.UseVisualStyleBackColor = true;
+            addSavingToCurrentMonthBtn.Click += addSavingToCurrentMonthBtn_Click;
+            // 
+            // savingsChart
+            // 
+            savingsChart.InitialRotation = 0D;
+            savingsChart.IsClockwise = true;
+            savingsChart.Location = new Point(1014, 740);
+            savingsChart.MaxAngle = 360D;
+            savingsChart.MaxValue = null;
+            savingsChart.MinValue = 0D;
+            savingsChart.Name = "savingsChart";
+            savingsChart.Size = new Size(308, 184);
+            savingsChart.TabIndex = 22;
+            savingsChart.Total = null;
+            // 
+            // balanceChart
+            // 
+            balanceChart.InitialRotation = 0D;
+            balanceChart.IsClockwise = true;
+            balanceChart.Location = new Point(222, 58);
+            balanceChart.MaxAngle = 360D;
+            balanceChart.MaxValue = null;
+            balanceChart.MinValue = 0D;
+            balanceChart.Name = "balanceChart";
+            balanceChart.Size = new Size(600, 401);
+            balanceChart.TabIndex = 23;
+            balanceChart.Total = null;
+            // 
+            // savingForGoalLbl
+            // 
+            savingForGoalLbl.AutoSize = true;
+            savingForGoalLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            savingForGoalLbl.Location = new Point(1087, 683);
+            savingForGoalLbl.Name = "savingForGoalLbl";
+            savingForGoalLbl.Size = new Size(147, 25);
+            savingForGoalLbl.TabIndex = 24;
+            savingForGoalLbl.Text = "Saving for goals";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label2.Location = new Point(513, 19);
+            label2.Name = "label2";
+            label2.Size = new Size(78, 25);
+            label2.TabIndex = 25;
+            label2.Text = "Balance";
+            // 
+            // addAutomaticSavingPerMBtn
+            // 
+            addAutomaticSavingPerMBtn.FlatAppearance.BorderColor = Color.FromArgb(0, 192, 0);
+            addAutomaticSavingPerMBtn.FlatAppearance.BorderSize = 3;
+            addAutomaticSavingPerMBtn.FlatStyle = FlatStyle.Flat;
+            addAutomaticSavingPerMBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            addAutomaticSavingPerMBtn.Location = new Point(498, 552);
+            addAutomaticSavingPerMBtn.Name = "addAutomaticSavingPerMBtn";
+            addAutomaticSavingPerMBtn.Size = new Size(208, 73);
+            addAutomaticSavingPerMBtn.TabIndex = 26;
+            addAutomaticSavingPerMBtn.Text = "Add automatic saving per month";
+            addAutomaticSavingPerMBtn.UseVisualStyleBackColor = true;
+            addAutomaticSavingPerMBtn.Click += addAutomaticSavingPerMBtn_Click;
+            // 
+            // balanceGoalsFilterChkBox
+            // 
+            balanceGoalsFilterChkBox.AutoSize = true;
+            balanceGoalsFilterChkBox.Location = new Point(943, 94);
+            balanceGoalsFilterChkBox.Name = "balanceGoalsFilterChkBox";
+            balanceGoalsFilterChkBox.Size = new Size(96, 19);
+            balanceGoalsFilterChkBox.TabIndex = 27;
+            balanceGoalsFilterChkBox.Text = "Include goals";
+            balanceGoalsFilterChkBox.UseVisualStyleBackColor = true;
+            balanceGoalsFilterChkBox.CheckedChanged += balanceGoalsFilterChkBox_CheckedChanged;
+            // 
+            // balanceGoalsAutoFilterChkBox
+            // 
+            balanceGoalsAutoFilterChkBox.AutoSize = true;
+            balanceGoalsAutoFilterChkBox.Location = new Point(907, 119);
+            balanceGoalsAutoFilterChkBox.Name = "balanceGoalsAutoFilterChkBox";
+            balanceGoalsAutoFilterChkBox.Size = new Size(132, 19);
+            balanceGoalsAutoFilterChkBox.TabIndex = 28;
+            balanceGoalsAutoFilterChkBox.Text = "Include goal ( auto )";
+            balanceGoalsAutoFilterChkBox.UseVisualStyleBackColor = true;
+            balanceGoalsAutoFilterChkBox.CheckedChanged += balanceGoalsAutoFilterChkBox_CheckedChanged;
+            // 
+            // maxOutcomeChart
+            // 
+            maxOutcomeChart.InitialRotation = 0D;
+            maxOutcomeChart.IsClockwise = true;
+            maxOutcomeChart.Location = new Point(61, 721);
+            maxOutcomeChart.MaxAngle = 360D;
+            maxOutcomeChart.MaxValue = null;
+            maxOutcomeChart.MinValue = 0D;
+            maxOutcomeChart.Name = "maxOutcomeChart";
+            maxOutcomeChart.Size = new Size(346, 203);
+            maxOutcomeChart.TabIndex = 30;
+            maxOutcomeChart.Total = null;
+            // 
+            // maxOutcomeLbl
+            // 
+            maxOutcomeLbl.AutoSize = true;
+            maxOutcomeLbl.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            maxOutcomeLbl.Location = new Point(176, 683);
+            maxOutcomeLbl.Name = "maxOutcomeLbl";
+            maxOutcomeLbl.Size = new Size(127, 25);
+            maxOutcomeLbl.TabIndex = 31;
+            maxOutcomeLbl.Text = "Max outcome";
+            // 
+            // modifyMaxOutcomeBtn
+            // 
+            modifyMaxOutcomeBtn.FlatAppearance.BorderColor = Color.LightSeaGreen;
+            modifyMaxOutcomeBtn.FlatAppearance.BorderSize = 3;
+            modifyMaxOutcomeBtn.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            modifyMaxOutcomeBtn.Location = new Point(115, 930);
+            modifyMaxOutcomeBtn.Name = "modifyMaxOutcomeBtn";
+            modifyMaxOutcomeBtn.Size = new Size(248, 32);
+            modifyMaxOutcomeBtn.TabIndex = 32;
+            modifyMaxOutcomeBtn.Text = "Modify max outcome";
+            modifyMaxOutcomeBtn.UseVisualStyleBackColor = true;
+            modifyMaxOutcomeBtn.Click += modifyMaxOutcomeBtn_Click;
+            // 
+            // panel4
+            // 
+            panel4.BackColor = Color.FromArgb(64, 64, 64);
+            panel4.Location = new Point(43, 659);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(1279, 3);
+            panel4.TabIndex = 3;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label6.Location = new Point(534, 524);
+            label6.Name = "label6";
+            label6.Size = new Size(133, 25);
+            label6.TabIndex = 33;
+            label6.Text = "Saving Overall";
+            // 
+            // cartesianChart1
+            // 
+            cartesianChart1.AutoScroll = true;
+            cartesianChart1.Location = new Point(431, 721);
+            cartesianChart1.Name = "cartesianChart1";
+            cartesianChart1.Size = new Size(556, 257);
+            cartesianChart1.TabIndex = 34;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 238);
+            label5.Location = new Point(658, 683);
+            label5.Name = "label5";
+            label5.Size = new Size(127, 25);
+            label5.TabIndex = 35;
+            label5.Text = "By Categories";
             // 
             // MoneyTrackingAnalytics
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1355, 623);
+            ClientSize = new Size(1331, 1002);
+            Controls.Add(label5);
+            Controls.Add(cartesianChart1);
+            Controls.Add(label6);
+            Controls.Add(panel4);
+            Controls.Add(modifyMaxOutcomeBtn);
+            Controls.Add(maxOutcomeLbl);
+            Controls.Add(maxOutcomeChart);
+            Controls.Add(balanceGoalsAutoFilterChkBox);
+            Controls.Add(balanceGoalsFilterChkBox);
+            Controls.Add(addAutomaticSavingPerMBtn);
+            Controls.Add(label2);
+            Controls.Add(savingForGoalLbl);
+            Controls.Add(balanceChart);
+            Controls.Add(savingsChart);
+            Controls.Add(addSavingToCurrentMonthBtn);
+            Controls.Add(goalsList);
             Controls.Add(statusLbl);
-            Controls.Add(button2);
+            Controls.Add(addGoalBtn);
             Controls.Add(label9);
-            Controls.Add(checkedListBox1);
-            Controls.Add(panel2);
             Controls.Add(label8);
             Controls.Add(outcomeLbl);
-            Controls.Add(label6);
+            Controls.Add(savingLbl);
             Controls.Add(incomeLbl);
             Controls.Add(label4);
-            Controls.Add(listBox1);
+            Controls.Add(historyListBox);
             Controls.Add(label3);
-            Controls.Add(label2);
             Controls.Add(label1);
-            Controls.Add(formsPlot3);
-            Controls.Add(formsPlot2);
             Controls.Add(panel1);
             Controls.Add(backBtn);
-            Controls.Add(formsPlot1);
             Name = "MoneyTrackingAnalytics";
             Text = "MoneyTrackingAnalytics";
             Load += MoneyTrackingAnalytics_Load;
@@ -267,25 +417,34 @@
         }
 
         #endregion
-
-        private ScottPlot.WinForms.FormsPlot formsPlot1;
         private Button backBtn;
         private Panel panel1;
-        private ScottPlot.WinForms.FormsPlot formsPlot2;
-        private ScottPlot.WinForms.FormsPlot formsPlot3;
         private Label label1;
-        private Label label2;
         private Label label3;
-        private ListBox listBox1;
+        private ListBox historyListBox;
         private Label label4;
         private Label incomeLbl;
-        private Label label6;
+        private Label savingLbl;
         private Label outcomeLbl;
         private Label label8;
-        private Panel panel2;
-        private CheckedListBox checkedListBox1;
         private Label label9;
-        private Button button2;
+        private Button addGoalBtn;
         private Label statusLbl;
+        private ListBox goalsList;
+        private Button addSavingToCurrentMonthBtn;
+        private LiveChartsCore.SkiaSharpView.WinForms.PieChart savingsChart;
+        private LiveChartsCore.SkiaSharpView.WinForms.PieChart balanceChart;
+        private Label savingForGoalLbl;
+        private Label label2;
+        private Button addAutomaticSavingPerMBtn;
+        private CheckBox balanceGoalsFilterChkBox;
+        private CheckBox balanceGoalsAutoFilterChkBox;
+        private LiveChartsCore.SkiaSharpView.WinForms.PieChart maxOutcomeChart;
+        private Label label6;
+        private Button modifyMaxOutcomeBtn;
+        private Label maxOutcomeLbl;
+        private Panel panel4;
+        private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart1;
+        private Label label5;
     }
 }

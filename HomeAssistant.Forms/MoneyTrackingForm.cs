@@ -13,12 +13,14 @@ namespace HomeAssistant.Forms
         private const string CategoryFilePath = "Categories.json";
         private int yearOfTransaction = DateTime.Now.Year;
         private int monthOfTransaction = DateTime.Now.Month;
-        private string TransactionFilePath => $"Transaction_{yearOfTransaction}_{monthOfTransaction}.json";
+        private string TransactionFilePath => string.IsNullOrWhiteSpace(Settings1.Default.LatestUsedTransactionJson) ?
+            $" Transaction_{yearOfTransaction}_{monthOfTransaction}.json" :
+            Settings1.Default.LatestUsedTransactionJson;
         private bool userWantsToReplaceTransactionFile = false;
 
-        private int lastSelectedTransactionIndex = -1;
-
         private bool isActiveForm = false;
+
+        private List<TransactionRecordJson> transactionRecords;
 
         /// <summary>
         /// Foreground and background
@@ -30,9 +32,15 @@ namespace HomeAssistant.Forms
         /// </summary>
         private (Color, Color) UnCategorizedTransactionStateColoring = (Color.Black, Color.Yellow);
 
+        public event EventHandler RefreshEvent;
+
+        private bool originalTransactionsSelected = true;
+
         public MoneyTrackingForm()
         {
             InitializeComponent();
+
+            transactionRecords = new List<TransactionRecordJson>();
 
             openFileDialog1.Filter = "CSV files (*.csv)|*.csv";
             foreach (Category category in GetCategories())
@@ -40,12 +48,60 @@ namespace HomeAssistant.Forms
                 categoryList.Items.Add(category);
             }
 
-            LoadTransactions(TransactionFilePath);
+            RefreshEvent += OnRefreshForm;
 
             isActiveForm = true;
+
+            LoadTransactions(TransactionFilePath);
         }
 
-        private void LoadTransactions(string path)
+        private void OnRefreshForm(object? sender, EventArgs e)
+        {
+            if (ShouldUpdateImportedTransactionsLabel() || string.IsNullOrWhiteSpace(TransactionFilePath))
+            {
+                shouldUpdateExportLbl.Text = "You should do the steps before any action!";
+                analyzeBtn.Enabled = false;
+            }
+            else
+            {
+                shouldUpdateExportLbl.Text = "";
+                analyzeBtn.Enabled = true;
+            }
+        }
+
+        private bool ShouldUpdateImportedTransactionsLabel()
+        {
+            if (transactionList.Items.Count == 0)
+            {
+                return true;
+            }
+
+            List<TransactionRecordJson> transactions = new List<TransactionRecordJson>();
+
+            foreach (TransactionRecordJson item in transactionList.Items)
+            {
+                transactions.Add(item);
+            }
+
+            int currentMonth = DateTime.Now.Month;
+            var first = transactions.OrderByDescending(t => t.Date1).First();
+            if (first == null)
+            {
+                statusLbl.Text = "Selected transaction is null";
+                return true;
+            }
+            string transactionMonth = first.Date1.Substring(4, 2);
+            int.TryParse(transactionMonth, out int transactionMonthResult);
+
+            if (transactionMonthResult == 0)
+            {
+                return false;
+            }
+
+            return (currentMonth - 1 == 0 ? 1 : currentMonth - 1) > transactionMonthResult;
+        }
+
+        private void LoadTransactions(string path, string? searchQuery = null)
         {
             if (File.Exists(path))
             {
@@ -55,18 +111,31 @@ namespace HomeAssistant.Forms
                 if (transactions != null && transactions.Any())
                 {
                     transactionList.Items.Clear();
+                    transactionRecords.Clear();
+
+                    if (!string.IsNullOrWhiteSpace(searchQuery))
+                    {
+                        transactions = transactions
+                            .Where(t => t.Vendor.ToLower().Contains(searchQuery.ToLower()))
+                            .ToList();
+                    }
+
+                    transactions = transactions.OrderBy(t => t.Field3).ToList();
+
+                    if (!originalTransactionsSelected)
+                    {
+                        transactions = transactions.Where(t => t?.Categories.Any() ?? false).ToList();
+                    }
+
                     foreach (var transaction in transactions)
                     {
                         transactionList.Items.Add(transaction);
+                        transactionRecords.Add(transaction);
                     }
-                    return;
                 }
             }
 
-            if (string.IsNullOrEmpty(path))
-            {
-                statusLbl.Text = "Transaction file not found";
-            }
+            RefreshEvent?.Invoke(this, EventArgs.Empty);
         }
 
         private void ReplaceTransactionFile()
@@ -150,6 +219,9 @@ namespace HomeAssistant.Forms
                 yearOfTransaction = yearInt;
                 monthOfTransaction = monthInt;
 
+                Settings1.Default.LatestUsedTransactionJson = TransactionFilePath;
+                Settings1.Default.Save();
+
                 if (File.Exists(TransactionFilePath))
                 {
                     ReplaceTransactionFile();
@@ -169,6 +241,8 @@ namespace HomeAssistant.Forms
                 using (var csv = new CsvReader(reader, config))
                 {
                     var records = csv.GetRecords<TransactionRecord>().ToList();
+
+                    transactionList.Items.Clear();
 
                     foreach (var record in records)
                     {
@@ -192,21 +266,51 @@ namespace HomeAssistant.Forms
                             Field13 = record.Field13,
                             TransactionType = record.TransactionType,
                             Field15 = record.Field15,
-                            Categories = new List<Category>() // Assuming you will handle categories separately
+                            Categories = GetCategoriesBasedOnTransactionVendor(record.Vendor) ?? new List<Category>()
                         };
 
                         // Process each record
                         transactionList.Items.Add(transactionRecordJson);
+                        transactionRecords.Add(transactionRecordJson);
                     }
                 }
+
+                if (ShouldUpdateImportedTransactionsLabel())
+                {
+                    shouldUpdateExportLbl.Text = "You should do the steps before any action!";
+                }
+                else
+                {
+                    shouldUpdateExportLbl.Text = "";
+                }
+
+                analyzeBtn.Enabled = transactionList.Items.Count != 0;
             }
             else
             {
 
             }
+
+            RefreshEvent?.Invoke(this, EventArgs.Empty);
         }
 
+        private List<Category>? GetCategoriesBasedOnTransactionVendor(string vendor)
+        {
+            List<List<TransactionRecordJson>> history = MoneyTrackingUtilities.GetHistory();
 
+            foreach (List<TransactionRecordJson> transactions in history)
+            {
+                foreach (var transaction in transactions)
+                {
+                    if (transaction.Vendor == vendor)
+                    {
+                        return transaction.Categories;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         private void categoryList_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -262,16 +366,17 @@ namespace HomeAssistant.Forms
             if (!File.Exists(TransactionFilePath))
             {
                 File.Create(TransactionFilePath).Close();
-                var transactions = JsonConvert.SerializeObject(transactionList.Items, Formatting.Indented);
+                var transactions = JsonConvert.SerializeObject(transactionRecords, Formatting.Indented);
                 File.WriteAllText(TransactionFilePath, transactions);
                 return;
             }
             if (userWantsToReplaceTransactionFile)
             {
                 File.WriteAllText(TransactionFilePath, string.Empty);
-                var transactions = JsonConvert.SerializeObject(transactionList.Items, Formatting.Indented);
+                var transactions = JsonConvert.SerializeObject(transactionRecords, Formatting.Indented);
                 File.WriteAllText(TransactionFilePath, transactions);
                 MessageBox.Show("File has been replaced.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                userWantsToReplaceTransactionFile = false;
                 return;
             }
 
@@ -281,7 +386,7 @@ namespace HomeAssistant.Forms
 
             for (int i = 0; i < transactionsOld.Count; i++)
             {
-                foreach (TransactionRecordJson transactionNew in transactionList.Items)
+                foreach (TransactionRecordJson transactionNew in transactionRecords)
                 {
                     if (transactionsOld[i].Id == transactionNew.Id)
                     {
@@ -383,54 +488,38 @@ namespace HomeAssistant.Forms
 
         private void transactionList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Only process if an item is selected
-            if (transactionList.SelectedIndex != -1)
+            if (transactionList.SelectedIndex == -1)
             {
-                // Display the last selected index (if valid)
-                if (lastSelectedTransactionIndex != -1)
+                return;
+            }
+
+            var selectedTransaction = transactionList.Items[transactionList.SelectedIndex] as TransactionRecordJson;
+
+            if (selectedTransaction?.Categories != null && selectedTransaction.Categories.Any())
+            {
+                foreach (var category in selectedTransaction?.Categories)
                 {
-                    // Category list refresh when user click away
                     for (int i = 0; i < categoryList.Items.Count; i++)
                     {
-                        if (categoryList.GetItemChecked(i))
+                        Category c = categoryList.Items[i] as Category;
+                        if (c?.Name == category.Name)
                         {
-                            var category = categoryList.Items[i] as Category;
+                            categoryList.SetItemChecked(i, true);
+                        }
+                        else
+                        {
                             categoryList.SetItemChecked(i, false);
-                            var record = (transactionList.Items[lastSelectedTransactionIndex] as TransactionRecordJson);
-                            if (record != null)
-                            {
-                                if (!record.Categories.Any(x => x.Name == category.Name))
-                                {
-                                    record.Categories.Add(new Category(category.Name, true));
-                                }
-                            }
                         }
                     }
-
-                    // Transaction handling when user click away
-                    var transaction = transactionList.Items[transactionList.SelectedIndex] as TransactionRecordJson;
-
-                    if (transaction != null)
-                    {
-                        foreach (var category in transaction.Categories)
-                        {
-                            for (int i = 0; i < categoryList.Items.Count; i++)
-                            {
-                                Category c = categoryList.Items[i] as Category;
-                                if (c.Name == category.Name)
-                                {
-                                    c.IsChecked = true;
-                                    categoryList.SetItemChecked(i, true);
-                                }
-                            }
-
-                        }
-                    }
-
-
                 }
-                // Update the last selected index
-                lastSelectedTransactionIndex = transactionList.SelectedIndex;
+
+            }
+            else
+            {
+                for (int i = 0; i < categoryList.Items.Count; i++)
+                {
+                    categoryList.SetItemChecked(i, false);
+                }
             }
         }
 
@@ -444,6 +533,8 @@ namespace HomeAssistant.Forms
             }
 
             isActiveForm = true;
+
+            LoadTransactions(TransactionFilePath);
         }
 
         private void MoneyTrackingForm_VisibleChanged(object sender, EventArgs e)
@@ -455,7 +546,73 @@ namespace HomeAssistant.Forms
 
                 // save transaction
                 SetTransaction();
-            }         
+            }
+        }
+
+        private void searchTxtBox_TextChanged(object sender, EventArgs e)
+        {
+            string query = searchTxtBox.Text;
+
+            transactionList.Items.Clear();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                transactionRecords.ForEach(t => transactionList.Items.Add(t));
+                return;
+            }
+
+            var referenceList = new TransactionRecordJson[transactionRecords.Count];
+            var result = new List<TransactionRecordJson>();
+
+            transactionRecords.CopyTo(referenceList, 0);
+
+            result = referenceList
+                                  .Where(t => t.Vendor.ToLower().Contains(query.ToLower()))
+                                  .ToList();
+
+            result.ForEach(t => transactionList.Items.Add(t));
+        }
+
+        private void assignCategoriesBtn_Click(object sender, EventArgs e)
+        {
+            var categories = new List<Category>();
+
+            foreach (Category category in categoryList.CheckedItems)
+            {
+                categories.Add(new Category() { IsChecked = true, Name = category.Name });
+            }
+            foreach (TransactionRecordJson transaction in transactionList.CheckedItems)
+            {
+                transaction.Categories = categories;
+            }
+
+            SetTransaction();
+
+            LoadTransactions(TransactionFilePath);
+        }
+
+        private void originalTransactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            originalTransactionsSelected = true;
+            LoadTransactions(TransactionFilePath);
+
+            if (sender is ToolStripMenuItem clickedItem)
+            {
+                clickedItem.Font = new Font(clickedItem.Font, FontStyle.Bold);
+                categorizedTransactionsToolStripMenuItem.Font = new Font(clickedItem.Font, FontStyle.Regular);
+            }
+        }
+
+        private void categorizedTransactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            originalTransactionsSelected = false;
+            LoadTransactions(TransactionFilePath);
+
+            if (sender is ToolStripMenuItem clickedItem)
+            {
+                clickedItem.Font = new Font(clickedItem.Font, FontStyle.Bold);
+                originalTransactionsToolStripMenuItem.Font = new Font(clickedItem.Font, FontStyle.Regular);
+            }
         }
     }
 }
