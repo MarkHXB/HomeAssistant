@@ -1,11 +1,8 @@
 ﻿using HomeAssistant.Lib.Features.Features;
 using LlamaStudio;
-using Messager;
 using Recorder;
 using Runner;
-using Scheduler;
 using SubSystemComponent;
-using Todo;
 
 namespace HomeAssistant.Lib.Features
 {
@@ -55,33 +52,6 @@ namespace HomeAssistant.Lib.Features
             }
         }
 
-        private Subsystem EventReminderSubsystem()
-        {
-            Dictionary<string, string> @params = new()
-            {
-                { "todo_system_command", "GETALL"},
-            };
-
-            var todoSystem = SubSystemFactory<TodoSystem>.Create(@params);
-            var messagerSystem = SubSystemFactory<MessagerSystem>.Create(@params, todoSystem);
-
-            return messagerSystem;
-        }
-
-        public Feature EventReminder
-        {
-            get
-            {
-                return new Feature
-                {
-                    Name = "Event reminder",
-                    Notifications = 0,
-                    Subsystem = EventReminderSubsystem(),
-                    Output = string.Empty,
-                };
-            }
-        }
-
         public IList<Feature> Features { get; private set; }
 
         public FeatureBase()
@@ -89,7 +59,6 @@ namespace HomeAssistant.Lib.Features
             Features = new List<Feature>
             {
                 //AppointmentFounderInRecordedAudio,
-                EventReminder
             };
         }
 
@@ -97,7 +66,7 @@ namespace HomeAssistant.Lib.Features
         {
             SubsystemPool.AddSubsystem(feature.Subsystem);
 
-            if(cyclicOfRunningInMilliseconds > 10) // 10ms to avoid high cpu usage
+            if (cyclicOfRunningInMilliseconds > 10) // 10ms to avoid high cpu usage
             {
                 while (true)
                 {
@@ -109,7 +78,7 @@ namespace HomeAssistant.Lib.Features
             }
             else
             {
-                await SubsystemPool.RunAllAsync(cancellationToken);  
+                await SubsystemPool.RunAllAsync(cancellationToken);
                 //a messagert tedd subsystemme, hogy egymas utan lehesen hasznalni oket, igy a messagersystem mar a friss todokkal tud dolgozni, tovabba ne nyiss public methodokat subsystemekre, mert ez a lenyege hogy fuggetlen
             }
         }

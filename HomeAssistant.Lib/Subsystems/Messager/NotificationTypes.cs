@@ -1,4 +1,4 @@
-﻿namespace Messager
+﻿namespace Notification.Environment
 {
     public enum NotificationTypes
     {

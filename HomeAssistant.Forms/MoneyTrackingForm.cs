@@ -124,7 +124,12 @@ namespace HomeAssistant.Forms
 
                     if (!originalTransactionsSelected)
                     {
-                        transactions = transactions.Where(t => t?.Categories.Any() ?? false).ToList();
+                        transactions = transactions?.Where(t => t?.Categories?.Any() ?? false).ToList();
+                    }
+
+                    if(transactions == null)
+                    {
+                        return;
                     }
 
                     foreach (var transaction in transactions)

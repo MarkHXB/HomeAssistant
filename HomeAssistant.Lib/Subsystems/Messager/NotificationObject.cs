@@ -1,16 +1,15 @@
-﻿namespace Messager
+﻿namespace Notification.Environment
 {
     public class NotificationObject
     {
-        public NotificationObject(string id, string title, string content, NotificationTypes type)
+        public NotificationObject(string title, string content, NotificationTypes type)
         {
-            Id = id;
             Title = title;
             Content = content;
             Type = type;
         }
 
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Title { get; set; }
         public string Content { get; set; }
         public NotificationTypes Type { get; set; }

@@ -4,7 +4,6 @@ using RecorderMicrophone;
 using Runner;
 using SoundAudio;
 using SubSystemComponent;
-using System.Runtime.InteropServices;
 
 namespace HomeAssistant.Forms
 {
@@ -146,9 +145,9 @@ namespace HomeAssistant.Forms
             trayIcon.Visible = false;
             Application.Exit();
         }
-       
+
         private async void btnCapture_Click(object sender, EventArgs e)
-        {     
+        {
             // Define the path where you want to save the screenshot
             string savePath = @"C:\temp\asd.png";
 

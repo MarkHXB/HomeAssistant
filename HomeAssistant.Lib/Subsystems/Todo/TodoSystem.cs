@@ -1,4 +1,5 @@
 ﻿using HomeAssistant.Lib.Subsystems.Todo;
+using Messager;
 using SubSystemComponent;
 using System.Data.SQLite;
 
@@ -30,6 +31,8 @@ namespace Todo
         private DateTime _newTodoDueToDate;
         private DateTime _newTodoReminderDate;
 
+        private MessagerSystem? _messagerSystem;
+
         public TodoSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
     base(ConfigObject.LogFilePath, @params, dependencies)
         {
@@ -40,7 +43,6 @@ namespace Todo
         {
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
-
 
             // Parameters
             Params.TryGetValue("todo_system_command", out string? _todoCommand);
@@ -55,6 +57,9 @@ namespace Todo
             DateTime.TryParse(todoSystemDueToDate, out _newTodoDueToDate);
             DateTime.TryParse(todoSystemReminderDate, out _newTodoReminderDate);
             bool.TryParse(todoSystemIsCompleted, out _newTodoIsCompleted);
+
+            _messagerSystem = GetSubsystem<MessagerSystem>();
+            _messagerSystem?.SendMessage.Invoke(this, new NotificationEventArgs("Asd", "asd"));
 
             InitializeDatabase();
         }

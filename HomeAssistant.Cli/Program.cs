@@ -1,4 +1,5 @@
 ﻿using LlamaStudio;
+using Messager;
 using MicrosoftTextToSpeech;
 using Recorder;
 using RecorderMicrophone;
@@ -6,8 +7,6 @@ using ResultObjectComponents;
 using Runner;
 using SoundAudio;
 using SubSystemComponent;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Todo;
 
 var appointmentFounderInRecordedAudio = async () =>
@@ -200,25 +199,27 @@ var todoTest = async () =>
 {
     Dictionary<string, string> @params = new()
     {
-        // {"todo_system_id", "9cc4c819-58fb-45fb-8c81-7091c94a93c6"},
-        //{"todo_system_command", "ADD"},
-        //{"todo_system_new_item_title", "Test2"},
-        //{ "todo_system_new_item_duetodate", "2024.06.06."},
-        //{"todo_system_new_item_reminderdate", "2024.06.05."},
-        //{"todo_system_new_item_iscompleted", "fa"},
+         {"todo_system_id", "9cc4c819-58fb-45fb-8c81-7091c94a93c6"},
+        {"todo_system_command", "ADD"},
+        {"todo_system_new_item_title", "Test2"},
+        { "todo_system_new_item_duetodate", "2024.06.06."},
+        {"todo_system_new_item_reminderdate", "2024.06.05."},
+        {"todo_system_new_item_iscompleted", "fa"},
     };
-    //Dictionary<string, string> @params = new()
-    //{
-    //    { "todo_system_command", "GETALL"},
-    //};
+   
+    @params = new()
+    {
+        { "todo_system_command", "GETALL"},
+    };
 
-    var todoSystem = SubSystemFactory<TodoSystem>.Create(@params);
+    var messageSystem = SubSystemFactory<MessagerSystem>.Create(@params);
+    var todoSystem = SubSystemFactory<TodoSystem>.Create(@params, messageSystem);
 
     SubsystemPool.AddSubsystem(todoSystem);
 
     await SubsystemPool.RunAllAsync(new CancellationToken());
 };
-//await todoTest();
+await todoTest();
 //var featureBase = new FeatureBase();
 //await featureBase.Run(featureBase.EventReminder);
 
@@ -427,51 +428,5 @@ var daemontest = () =>
     SubsystemPool.StartDaemon(runnerSystem, 30000, null, tcs2);
 };
 
-//await cori();
-
-//daemontest();
 
 //await Task.WhenAll(taskCompletionSources.Select(tcs => tcs.Task));
-
-
-
-private static LowLevelKeyboardProc _proc = HookCallback;
-private static IntPtr _hookID = IntPtr.Zero;
-var _hookID = SetHook(_proc);
-
-static IntPtr SetHook(LowLevelKeyboardProc proc)
-{
-    using (Process curProcess = Process.GetCurrentProcess())
-    using (ProcessModule curModule = curProcess.MainModule)
-    {
-        return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
-    }
-}
-
- delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-
- static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-{
-    if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
-    {
-        int vkCode = Marshal.ReadInt32(lParam);
-        Console.WriteLine((Keys)vkCode);
-    }
-    return CallNextHookEx(_hookID, nCode, wParam, lParam);
-}
-
- const int WH_KEYBOARD_LL = 13;
- const int WM_KEYDOWN = 0x0100;
-
-[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
-
-[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-[return: MarshalAs(UnmanagedType.Bool)]
- static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
- static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
-[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
- static extern IntPtr GetModuleHandle(string lpModuleName);

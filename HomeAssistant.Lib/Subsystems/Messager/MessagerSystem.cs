@@ -1,19 +1,56 @@
-﻿using HomeAssistant.Lib.Subsystems.Todo;
-using Microsoft.Toolkit.Uwp.Notifications;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Notification.Environment;
 using SubSystemComponent;
 
 namespace Messager
 {
+    /// <summary>
+    ///  this class doesnt do anything in standalone
+    ///  <para></para>
+    ///  you should add a messagersystem instance to the dependency chain where you wanna use it ( call from )
+    /// </summary>
     public class MessagerSystem : Subsystem
     {
-        // Params
+        public EventHandler<NotificationEventArgs> SendMessage;
 
         public MessagerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
       base(ConfigObject.LogFilePath, @params, dependencies)
         {
-
+            SendMessage += OnSendMessage;
         }
+
+        private async void OnSendMessage(object? sender, NotificationEventArgs e)
+        {
+            if (e != null && e.Content != null)
+            {
+                var newNotification = e.Content;
+                IList<NotificationObject> notifications;
+
+                // create json file if not exists
+                if (!File.Exists(ConfigObject.NotificationsFilePath))
+                {
+                    File.Create(ConfigObject.NotificationsFilePath).Close();
+                }
+
+                try
+                {
+                    // read json messages
+                    string json = await File.ReadAllTextAsync(ConfigObject.NotificationsFilePath);
+                    notifications = JsonConvert.DeserializeObject<List<NotificationObject>>(json) ?? new List<NotificationObject>();
+
+                    // append new notifications to json
+                    notifications.Add(newNotification);
+                    json = JsonConvert.SerializeObject(notifications);
+                    await File.WriteAllTextAsync(ConfigObject.NotificationsFilePath, json);
+                }
+                catch (Exception ex)
+                {
+                    LogError($"An error occurred while adding a new notification: {ex.Message}");
+                    //throw;
+                }
+            }
+        }
+
         public override void Initialize()
         {
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
@@ -21,131 +58,22 @@ namespace Messager
 
             // Null checks
             _ = config ?? throw new ArgumentNullException(nameof(config));
-
         }
 
         public override Task TaskObject(CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
-                var todos = GetSubsystem(nameof(Todo.TodoSystem))?.GetOutput<IEnumerable<TodoItem>>(false) ?? new List<TodoItem>();
-                var notifications = new List<NotificationObject>();
+                //var todos = GetSubsystem(nameof(Todo.TodoSystem))?.GetOutput<IEnumerable<TodoItem>>(false) ?? new List<TodoItem>();
+                //var notifications = new List<NotificationObject>();
 
-                foreach (var todo in todos)
-                {
-                    notifications.Add(new NotificationObject(todo.Id, todo.Title, "asd", NotificationTypes.Toast));
-                }
+                //foreach (var todo in todos)
+                //{
+                //    notifications.Add(new NotificationObject(todo.Id, todo.Title, "asd", NotificationTypes.Toast));
+                //}
 
-                ShowNotificationsOnLocal(notifications);
-            });   
+                //ShowNotificationsOnLocal(notifications);
+            });
         }
-       
-        //private void AddNotification(NotificationObject notification) => AddNewNotificationToFile(notification);
-
-        private void ShowNotificationsOnLocal(List<NotificationObject> notifications)
-        {
-            //var notifications = await LoadNotificationsFromFile();
-
-            foreach (var notification in notifications)
-            {
-                if (!notification.Notified)
-                {
-                    CreateNotification(notification);
-
-                    notification.Notified = true;
-                }
-            }
-
-            //await SaveNotificationsToFile(notifications);
-        }
-
-        #region Private methods
-        //private async void AddNewNotificationToFile(NotificationObject notification)
-        //{
-        //    try
-        //    {
-        //        var notifications = await LoadNotificationsFromFile();
-        //        var notificationList = new List<NotificationObject>(notifications) { notification };
-        //        await SaveNotificationsToFile(notificationList);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle exceptions (e.g., log the error)
-        //        LogError($"An error occurred while adding a new notification: {ex.Message}");
-        //        throw;
-        //    }
-        //}
-
-        //private async Task SaveNotificationsToFile(IEnumerable<NotificationObject> notificationObjects)
-        //{
-        //    try
-        //    {
-        //        string json = JsonConvert.SerializeObject(notificationObjects, Formatting.Indented);
-        //        using (StreamWriter writer = new StreamWriter(ConfigObject.NotificationsFilePath, false))
-        //        {
-        //            await writer.WriteAsync(json);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle exceptions (e.g., log the error)
-        //        LogError($"An error occurred while saving notifications: {ex.Message}");
-        //        throw;
-        //    }
-        //}
-
-        //private async Task<IEnumerable<NotificationObject>> LoadNotificationsFromFile()
-        //{
-        //    try
-        //    {
-        //        using (StreamReader reader = new StreamReader(ConfigObject.NotificationsFilePath))
-        //        {
-        //            string json = await reader.ReadToEndAsync();
-        //            return JsonConvert.DeserializeObject<IEnumerable<NotificationObject>>(json) ?? new List<NotificationObject>();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle exceptions (e.g., log the error)
-        //        LogError($"An error occurred while loading notifications: {ex.Message}");
-        //        return new List<NotificationObject>();
-        //    }
-        //}
-
-        private void CreateNotification(NotificationObject notification)
-        {
-            switch (notification.Type)
-            {
-                case NotificationTypes.Toast:
-                    CreateToastNotification(notification);
-                    break;
-                case NotificationTypes.Assistant:
-                    CreateAssistantNotificationAsync(notification).ConfigureAwait(false);
-                    break;
-                case NotificationTypes.Remotes:
-                    CreateRemotesNotificationAsync(notification).ConfigureAwait(false);
-                    break;
-            }
-        }
-
-        private void CreateToastNotification(NotificationObject notification)
-        {
-            
-        }
-
-        private async Task CreateAssistantNotificationAsync(NotificationObject notification)
-        {
-            // Implement assistant notification logic here
-        }
-
-        private async Task CreateRemotesNotificationAsync(NotificationObject notification)
-        {
-            // Implement remotes notification logic here
-        }
-
-      
-
-
-        #endregion
     }
 }
