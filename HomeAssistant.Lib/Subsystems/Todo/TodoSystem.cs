@@ -22,7 +22,6 @@ namespace Todo
         // Output
         public IList<TodoItem> TodoItems { get; private set; }
 
-
         // params
         private TodoCommands _command;
         private string? _todoId;
@@ -30,8 +29,6 @@ namespace Todo
         private bool _newTodoIsCompleted;
         private DateTime _newTodoDueToDate;
         private DateTime _newTodoReminderDate;
-
-        private MessagerSystem? _messagerSystem;
 
         public TodoSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
     base(ConfigObject.LogFilePath, @params, dependencies)
@@ -57,9 +54,6 @@ namespace Todo
             DateTime.TryParse(todoSystemDueToDate, out _newTodoDueToDate);
             DateTime.TryParse(todoSystemReminderDate, out _newTodoReminderDate);
             bool.TryParse(todoSystemIsCompleted, out _newTodoIsCompleted);
-
-            _messagerSystem = GetSubsystem<MessagerSystem>();
-            _messagerSystem?.SendMessage.Invoke(this, new NotificationEventArgs("Asd", "asd"));
 
             InitializeDatabase();
         }

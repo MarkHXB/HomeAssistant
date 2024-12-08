@@ -1,18 +1,18 @@
-﻿namespace Notification.Environment
+﻿namespace Messager
 {
     public class NotificationObject
     {
-        public NotificationObject(string title, string content, NotificationTypes type)
+        public NotificationObject(string subject, string body, NotificationTypes type)
         {
-            Title = title;
-            Content = content;
+            Subject = subject;
+            Body = body;
             Type = type;
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public NotificationTypes Type { get; set; }
-        public bool Notified { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+		public DateTime Date { get; set; } = DateTime.Now;
+		public NotificationTypes Type { get; set; }
     }
 }

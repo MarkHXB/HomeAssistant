@@ -1,6 +1,9 @@
 ﻿using HomeAssistant.Lib.Subsystems.Todo;
 using SubSystemComponent;
+using System.Net.Mail;
+using System.Net;
 using Todo;
+using System.Text;
 
 namespace HomeAssistant.Forms
 {
@@ -81,22 +84,28 @@ namespace HomeAssistant.Forms
             }
         }
 
-        private void LoadTodo()
-        {
-            if (_selectedItem == null)
-            {
-                return;
-            }
+        private async void LoadTodo()
+		{
+			if (_selectedItem == null)
+			{
+				return;
+			}
 
-            todoTitleTxtBox.Text = _selectedItem.Title;
-            todoDueDateTxtBox.Text = _selectedItem.DueDate.ToString();
-            todoReminderDateTxtBox.Text = _selectedItem.ReminderDate.ToString();
-            todoIsCompletedChckBox.Checked = _selectedItem.IsCompleted;
-            todoIsNotifiedDueDateChckBox.Checked = _selectedItem.IsNotifiedDueDate;
-            todoIsReminderDateChckBox.Checked = _selectedItem.IsNotifiedReminderDate;
-        }
+			//SendMail();
 
-        private void HighlightOutOfDateTodos(Control control)
+			//await SendNotification();
+
+			todoTitleTxtBox.Text = _selectedItem.Title;
+			todoDueDateTxtBox.Text = _selectedItem.DueDate.ToString();
+			todoReminderDateTxtBox.Text = _selectedItem.ReminderDate.ToString();
+			todoIsCompletedChckBox.Checked = _selectedItem.IsCompleted;
+			todoIsNotifiedDueDateChckBox.Checked = _selectedItem.IsNotifiedDueDate;
+			todoIsReminderDateChckBox.Checked = _selectedItem.IsNotifiedReminderDate;
+		}
+
+		
+
+		private void HighlightOutOfDateTodos(Control control)
         {
 
         }

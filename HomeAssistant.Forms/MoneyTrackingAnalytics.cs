@@ -341,7 +341,6 @@ balanceSerie, OutcomeSerie
 
         private void backBtn_Click(object sender, EventArgs e)
         {
-
             Hide();
             moneyTrackingForm.Show();
         }

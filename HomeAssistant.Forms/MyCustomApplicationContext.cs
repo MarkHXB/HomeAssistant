@@ -1,5 +1,8 @@
 ﻿using HomeAssistant.Lib.Utils;
 using LlamaStudio;
+using Messager;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Newtonsoft.Json;
 using RecorderMicrophone;
 using Runner;
 using SoundAudio;
@@ -12,6 +15,7 @@ namespace HomeAssistant.Forms
         private NotifyIcon trayIcon;
 
         private ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public MyCustomApplicationContext()
         {
@@ -27,6 +31,52 @@ namespace HomeAssistant.Forms
             contextMenuStrip.Items.Add("Money Tracking", null, btnMoneyTracker_Click);
             contextMenuStrip.Items.Add("Exit", null, OnExit);
             trayIcon.ContextMenuStrip = contextMenuStrip;
+
+            Task.Run(async() =>
+            {
+                int delayInMs = 60000;
+
+                while (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    InitMessagerDaemon();
+                    await Task.Delay(delayInMs);
+                }
+            });            
+        }
+
+        private void InitMessagerDaemon()
+        {
+            IList<NotificationObject> notifications = new List<NotificationObject>();
+
+            try
+            {
+                string data = File.ReadAllText(ConfigObject.NotificationsFilePath);
+                notifications = JsonConvert.DeserializeObject<List<NotificationObject>>(data) ?? new List<NotificationObject>();
+                int indexesToRemove = 0;
+                foreach (var noti in notifications)
+                {
+                    ShowToastNotification(noti);
+                    indexesToRemove++;
+                }
+                for (int i = 0; i < indexesToRemove; i++)
+                {
+                    notifications.RemoveAt(i);
+                }
+                string json = JsonConvert.SerializeObject(notifications);
+                File.WriteAllText(ConfigObject.NotificationsFilePath, json);
+            }
+            catch (Exception)
+            {
+                cancellationTokenSource.Cancel();
+            }
+        }
+
+        private void ShowToastNotification(NotificationObject notification)
+        {
+            new ToastContentBuilder()
+                .AddText(notification.Subject)
+                .AddText(notification.Body ?? string.Empty)
+                .Show();
         }
 
         private void btnMoneyTracker_Click(object? sender, EventArgs e)
