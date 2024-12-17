@@ -19,20 +19,20 @@ namespace Runner
         private string? dependentSubsystemOutputPath;
         private string? convertOutputToJson;
 
-        public RunnerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(ConfigObject.LogFilePath, @params, dependencies)
+        public RunnerSystem(params Subsystem[] dependencies) :
+            base(ConfigObject.LogFilePath, dependencies)
         {
 
         }
 
-        public override void Initialize()
-        {
-            Params.TryGetValue("runner_system_file_path", out filePath);
-            Params.TryGetValue("runner_system_file_name", out fileName);
-            Params.TryGetValue("runner_system_arguements", out args);
-            Params.TryGetValue("runner_system_dependent_subsystem_output_path", out dependentSubsystemOutputPath);
-            Params.TryGetValue("runner_system_dependent_convert_output_path_to_json", out convertOutputToJson);
-        }
+		public override void Initialize()
+		{
+			filePath = GetParameter<string>("runner_system_file_path");
+			fileName = GetParameter<string>("runner_system_file_name");
+			args = GetParameter<string>("runner_system_arguements");
+			dependentSubsystemOutputPath = GetParameter<string>("runner_system_dependent_subsystem_output_path");
+			convertOutputToJson = GetParameter<string>("runner_system_dependent_convert_output_path_to_json");
+		}
 
         public override async Task TaskObject(CancellationToken cancellationToken)
         {

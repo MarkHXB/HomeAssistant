@@ -70,7 +70,7 @@ namespace HomeAssistant.Forms
             //{"todo_system_new_item_iscompleted", "fa"},
 
 
-            _todoSystem = SubSystemFactory<TodoSystem>.Create(@params);
+            _todoSystem = SubSystemFactory<TodoSystem>.Create();
 
             SubsystemPool.AddSubsystem(_todoSystem);
         }

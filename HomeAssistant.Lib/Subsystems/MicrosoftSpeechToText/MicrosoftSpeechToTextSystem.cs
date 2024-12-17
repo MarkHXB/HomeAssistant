@@ -19,8 +19,8 @@ namespace MicrosoftSpeechToText
         // Params
         private double microsoft_speech_to_text_stop_recognition_on_silence_in_ms;
 
-        public MicrosoftSpeechToTextSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-    base(ConfigObject.LogFilePath, @params, dependencies)
+        public MicrosoftSpeechToTextSystem(params Subsystem[] dependencies) :
+    base(ConfigObject.LogFilePath, dependencies)
         {
 
         }
@@ -41,10 +41,8 @@ namespace MicrosoftSpeechToText
 
             microsoftSpeechToTextFilePath = config.MicrosoftSpeechToTextFilePath;
 
-            // Params
-            Params.TryGetValue("microsoft_speech_to_text_stop_recognition_on_silence_in_ms", out string? microsoftSpeechToTextStopRecognitionOnSilenceInMs);
-
-            double.TryParse(microsoftSpeechToTextStopRecognitionOnSilenceInMs, out microsoft_speech_to_text_stop_recognition_on_silence_in_ms);
+			// Params
+			microsoft_speech_to_text_stop_recognition_on_silence_in_ms = GetParameter<double>("microsoft_speech_to_text_stop_recognition_on_silence_in_ms");
         }
 
         public override async Task TaskObject(CancellationToken cancellationToken)

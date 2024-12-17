@@ -23,8 +23,8 @@ namespace Whisper
         private string whisperUsedLanguage;
         private GgmlType whisperModel;
 
-        public WhisperSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-     base(ConfigObject.LogFilePath, @params, dependencies)
+        public WhisperSystem( params Subsystem[] dependencies) :
+     base(ConfigObject.LogFilePath, dependencies)
         {
 
         }

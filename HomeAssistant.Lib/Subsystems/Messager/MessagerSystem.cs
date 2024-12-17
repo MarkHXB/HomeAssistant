@@ -19,8 +19,8 @@ namespace Messager
 		private string gmailPasswordKey;
 		private string historyFilePath;
 
-		public MessagerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-	  base(ConfigObject.LogFilePath, @params, dependencies)
+		public MessagerSystem(params Subsystem[] dependencies) :
+	  base(ConfigObject.LogFilePath, dependencies)
 		{
 			
 		}
@@ -43,8 +43,8 @@ namespace Messager
 			historyFilePath = ConfigObject.NotificationsFilePath;
 
 			// Get params
-			pushBulletApiKey = GetParam<string>(nameof(Messager.Params.PushBulletApiKey), string.Empty);
-			gmailPasswordKey = GetParam<string>(nameof(Messager.Params.GmailPasswordKey), string.Empty);
+			pushBulletApiKey = GetParameter<string>(nameof(Messager.Params.PushBulletApiKey), string.Empty);
+			gmailPasswordKey = GetParameter<string>(nameof(Messager.Params.GmailPasswordKey), string.Empty);
 
 			// Validate params
 			if (string.IsNullOrWhiteSpace(pushBulletApiKey) || string.IsNullOrWhiteSpace(gmailPasswordKey))

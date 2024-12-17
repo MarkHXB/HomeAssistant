@@ -12,8 +12,8 @@ namespace SoundAudio
     {
         private string recorderOutputPath = string.Empty;
 
-        public SoundAudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-     base(ConfigObject.LogFilePath, @params, dependencies)
+        public SoundAudioSystem(params Subsystem[] dependencies) :
+     base(ConfigObject.LogFilePath,dependencies)
         {
 
         }

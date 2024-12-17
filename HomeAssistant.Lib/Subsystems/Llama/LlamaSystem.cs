@@ -33,8 +33,8 @@ namespace LlamaStudio
         private string? make_json_object;
         private string? llamastudio_screenreader;
 
-        public LlamaStudioSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-             base(ConfigObject.LogFilePath, @params, dependencies)
+        public LlamaStudioSystem(params Subsystem[] dependencies) :
+             base(ConfigObject.LogFilePath, dependencies)
         {
 
         }
@@ -58,11 +58,10 @@ namespace LlamaStudio
             inputTextFilePath = config.InputTextFilePath;
             llamaOutputFilePathJson = config.LlamaOutputFilePathJson;
 
-            Params.TryGetValue("llamastudio_system_message", out llamastudio_systemMessage);
-            Params.TryGetValue("llamastudio_user_prompt", out llamastudio_userPrompt);
-            Params.TryGetValue("make_json_object", out make_json_object);
-            Params.TryGetValue("llamastudio_screenreader", out llamastudio_screenreader);
-
+			llamastudio_systemMessage = GetParameter<string>("llamastudio_system_message");
+			llamastudio_userPrompt = GetParameter<string>("llamastudio_user_prompt");
+			make_json_object = GetParameter<string>("make_json_object");
+			llamastudio_screenreader = GetParameter<string>("llamastudio_screenreader");
 
 
             if (string.IsNullOrWhiteSpace(llamastudio_systemMessage))

@@ -12,10 +12,9 @@ namespace Scheduler
         private List<Action> _actions;
         private int _maxRuns;
 
-        public SchedulerSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(ConfigObject.LogFilePath, @params, dependencies)
+        public SchedulerSystem(params Subsystem[] dependencies) :
+            base(ConfigObject.LogFilePath, dependencies)
         {
-            _params = @params;
             _actions = new List<Action>();
             _maxRuns = 1; // default value
         }

@@ -30,8 +30,8 @@ namespace Todo
         private DateTime _newTodoDueToDate;
         private DateTime _newTodoReminderDate;
 
-        public TodoSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-    base(ConfigObject.LogFilePath, @params, dependencies)
+        public TodoSystem(params Subsystem[] dependencies) :
+    base(ConfigObject.LogFilePath, dependencies)
         {
             TodoItems = new List<TodoItem>();
         }
@@ -41,19 +41,13 @@ namespace Todo
             ConfigHandler configHandler = new ConfigHandler(ConfigObject.ConfigFilePath);
             var config = configHandler.LoadConfig<ConfigObject>();
 
-            // Parameters
-            Params.TryGetValue("todo_system_command", out string? _todoCommand);
-            Params.TryGetValue("todo_system_id", out _todoId);
-            Params.TryGetValue("todo_system_new_item_title", out _newTodoTitle);
-            Params.TryGetValue("todo_system_new_item_duetodate", out string? todoSystemDueToDate);
-            Params.TryGetValue("todo_system_new_item_reminderdate", out string? todoSystemReminderDate);
-            Params.TryGetValue("todo_system_new_item_iscompleted", out string? todoSystemIsCompleted);
-
-            Enum.TryParse(_todoCommand, out _command);
-
-            DateTime.TryParse(todoSystemDueToDate, out _newTodoDueToDate);
-            DateTime.TryParse(todoSystemReminderDate, out _newTodoReminderDate);
-            bool.TryParse(todoSystemIsCompleted, out _newTodoIsCompleted);
+			// Parameters
+			_command = GetParameter<TodoCommands>("todo_system_command");
+            _todoId = GetParameter<string>("todo_system_id");
+			_newTodoTitle = GetParameter<string>("todo_system_new_item_title");
+			_newTodoDueToDate= GetParameter<DateTime>("todo_system_new_item_duetodate");
+			_newTodoReminderDate= GetParameter<DateTime>("todo_system_new_item_reminderdate");
+			_newTodoIsCompleted= GetParameter<bool>("todo_system_new_item_iscompleted");
 
             InitializeDatabase();
         }

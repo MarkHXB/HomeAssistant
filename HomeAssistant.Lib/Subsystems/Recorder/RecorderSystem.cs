@@ -21,8 +21,8 @@ namespace Recorder
         private double recorder_system_wait_for_exit_in_ms;
         private double recorder_system_stop_automatacilly_after_silence_of_ms;
 
-        public RecorderSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-     base(ConfigObject.LogFilePath, @params, dependencies)
+        public RecorderSystem( params Subsystem[] dependencies) :
+     base(ConfigObject.LogFilePath, dependencies)
         {
         }
 
@@ -38,12 +38,9 @@ namespace Recorder
 
             recorderOutputPathFileName = config.RecorderOutputPath;
 
-            // Parameters
-            Params.TryGetValue("recorder_system_wait_for_exit_in_ms", out string? recorderSystemWaitForExitInMs);
-            Params.TryGetValue("recorder_system_stop_automatacilly_after_silence_of_ms", out string? recorderSystemStopAutomatacillyAfterSilenceOfMs);
-
-            double.TryParse(recorderSystemWaitForExitInMs, out recorder_system_wait_for_exit_in_ms);
-            double.TryParse(recorderSystemStopAutomatacillyAfterSilenceOfMs, out recorder_system_stop_automatacilly_after_silence_of_ms);
+			// Parameters
+			recorder_system_wait_for_exit_in_ms = GetParameter<double>("recorder_system_wait_for_exit_in_ms");
+			recorder_system_stop_automatacilly_after_silence_of_ms = GetParameter<double>("recorder_system_stop_automatacilly_after_silence_of_ms");
         }
 
         public override async Task TaskObject(CancellationToken cancellationToken)

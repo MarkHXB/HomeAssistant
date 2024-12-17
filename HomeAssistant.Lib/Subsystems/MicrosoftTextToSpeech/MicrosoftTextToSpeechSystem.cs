@@ -12,8 +12,8 @@ namespace MicrosoftTextToSpeech
         // Config
         private string llamaPathText;
 
-        public MicrosoftTextToSpeechSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-      base(ConfigObject.LogFilePath, @params, dependencies)
+        public MicrosoftTextToSpeechSystem(params Subsystem[] dependencies) :
+      base(ConfigObject.LogFilePath, dependencies)
         {
 
         }

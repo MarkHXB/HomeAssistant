@@ -8,8 +8,8 @@ namespace ResultObjectComponents
     {
         private string? resultObjectInput;
 
-        public ResultObjectResolverSystem(Dictionary<string, string> @params, params Subsystem[] dependencies) :
-            base(ConfigObject.LogFilePath, @params, dependencies)
+        public ResultObjectResolverSystem(params Subsystem[] dependencies) :
+            base(ConfigObject.LogFilePath,  dependencies)
         {
 
         }
