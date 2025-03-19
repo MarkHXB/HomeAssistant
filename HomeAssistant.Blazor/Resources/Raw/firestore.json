@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "homeassistant-1ae72",
+  "private_key_id": "62b573a494802d004c71693d076745234f76828a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGIJlR6KGBl3NJ\nqN5GG5a6k+HZi0Eu66N+rYnXxuh79c8n0CGt1WoB6wdaVcMC8rNJvYnLS/bGIs4d\nS+7CbCrR8bIKFsInxVUZ1dQSY+4NtXY2eJGpADpi59zjPgsGQl4KlaBzFmuG+ThY\nabXdpkSGRCgSh7yiis1Xka3l4k8Q/8+h/QUY2+CrJx4Ff/e5C8XMIdVIdVYpQ36E\n/F+r4EBb7jZLjGySELkGCBVp0cYb0DQHp1d323poqXYzJuFE1oK2bq7losi3TP4Z\nu5WPm0dnsZpT6xPqV9uqe/YXF+5VMTzDrSs1jupvspT6NspaqQRdBKteaN/AaRvN\nOH9LMIghAgMBAAECggEAHaRQ6/U+/JF5GSMfpiOIiH+Jga+Y3/k3K8Ow5MyIics7\n4/v6nfRY+NJ99iDwnSdMdZLa48SIthoM9kse/I2MVn6voVzITYTzd3sLUHkM65Yj\nioC9Yih7k8KWxJTKt3QEd9bs+2r2SWpN6MRgBjpS9DeMO0F9kl/r2tcbylHyfFtV\n6cI5XxKLUyGD68Q1x53XfT5ba2w1qY+SQnLLzJgXIyuwpF9G+O/0FmMqXzZb1HwM\n8ogHqYNHw7gedmJx/heAvsSpO5ohCSJK8XSZsZXHLcEwGz8qk8Hdcg8Ism+QywEB\nkpeHzlTanFOzHIxL+8U2w87NhjhfOCeZCE/ghlIQcQKBgQDuHetHPMKnw74ym9LT\n3h6kY5E/+vfZw3KbgMUZooRKsFIqk25pt5W6ttT5uQsyNmuwENv4A9r5xorKxBzd\n7diBd+kmGn0E6a45o/S9XFgTRpiTXD1Cw64OOmk/vJclQR1JbNtVCz2obEM/9Hqx\nk9/e+fPCw27t9v2uVl114bkMNQKBgQDVAdVZC2/Df+rdBPGi2sDfba+pcEb3xPOX\nKz9jFfkKB1XejH2xLbEx/x3IhelaneICwskfV089iGfFPhY/le2qMHbcagnJC1Vm\nFQc5ypQl6XnKkNP3jz6yks/TvXnVnz6tFwhKMqe06jtCUmFn6Vlb4Ev1c1G87ZyW\nEPrrlxcRvQKBgGlB3IEvALT8OBVTAE0bgNwWD10C6ZDfbsgCkh4U0vnZG1kqtsIQ\nnyVcMKT7AVH+8Hdx3Gqz+ZY0B6I+Mqx/uRbyFKP9TYpgad2c9lDGg0ByEnwBaCsd\nKNGtTF0aVo3nTLTqY8IiJ+1NfiTFQ38/6NQ+FVzg2yZh6h2om8PCNfSJAoGAOqLz\nkTyluqKnC8rFnfgsKhVuyuz+jExqZg3guC0fTlRwnf/8xd53LfU1xLKgZ3KY+fuX\nFAqb5Kt9LX4G7+Ac+cG3pruGEBMPojddstoCaGFaRpoRz89eChiCH57EQDtDLLDv\ndkV1h0cHox08dTd2guU+48WoFaMvfNwVxu7jyd0CgYAoTsA0U5n/QAFLf2lUeRBP\n5CFdmSa+Yb/iENDAmE9f7bP89mV/sw6iPyisbCNt05bn8QY+MvJ8tV1XzFHnLilE\nUOT2P9SGpnw7hGThJbS6d5rUtvpa8J0dOPHe0PTij/T9hawUO7sNSWzc8t6GnKUu\nrHAi3diqO2kLHgzP1mDeuA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@homeassistant-1ae72.iam.gserviceaccount.com",
+  "client_id": "111913635048997423433",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40homeassistant-1ae72.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

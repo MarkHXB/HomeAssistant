@@ -1,9 +1,15 @@
 ﻿
+using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Nyxarion
 {
+	class Log
+	{
+		public string Process { get; set; }
+	}
+
 	public class ForeGroundWindowLogger : IExtension
 	{
 		[DllImport("user32.dll")]
@@ -30,12 +36,35 @@ namespace Nyxarion
 			_logPath = logPath;
 		}
 
-		public async Task ExecuteAsync()
+		public async Task ExecuteAsync(CancellationToken? cancellationToken = null)
 		{
-			string activeProcess = GetActiveProcess();
+			if (!cancellationToken.HasValue)
+			{
+				throw new ArgumentNullException(nameof(cancellationToken));
+			}
 
-			var json = System.Text.Json.JsonSerializer.Serialize(activeProcess);
-			await System.IO.File.WriteAllTextAsync(Path.Combine(_logPath, _logFileName), json);
+			while (!cancellationToken.Value.IsCancellationRequested)
+			{
+				string activeProcess = GetActiveProcess();
+				var log = new Log
+				{
+					Process = activeProcess
+				};
+					
+				if (!System.IO.File.Exists(Path.Combine(_logPath, _logFileName)))
+				{
+					System.IO.File.Create(Path.Combine(_logPath, _logFileName)).Close();
+				}
+
+				var data = System.IO.File.ReadAllText(Path.Combine(_logPath, _logFileName));
+				List<Log> history = JsonConvert.DeserializeObject<List<Log>>(data) ?? new List<Log>();
+				history.Add(log);
+				string content = JsonConvert.SerializeObject(history);
+
+				await System.IO.File.AppendAllTextAsync(Path.Combine(_logPath, _logFileName), content); 
+				
+				Thread.Sleep(1000);
+			}	
 		}
 
 		private string GetActiveProcess()

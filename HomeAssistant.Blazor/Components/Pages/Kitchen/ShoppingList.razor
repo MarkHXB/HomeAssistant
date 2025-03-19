@@ -1,0 +1,18 @@
+﻿@page "/shopping-list"
+@inject HomeAssistant.Blazor.Services.ShoppingListService ShoppingListService
+
+<div id="unbought-items">
+    @foreach (var item in ShoppingListItems)
+    {
+        <ShoppingListItem Model="item" OnDelete="OnItemCheckedChanged" />
+    }
+</div>
+
+<div id="bought-items">
+    @foreach (var item in CheckedItems)
+    {
+        <ShoppingListItem Model="item" OnDelete="OnItemCheckedChanged" />
+    }
+</div>
+
+<button @onclick="@(() => Modal.Show<Home>("Add item"))">Add items</button>

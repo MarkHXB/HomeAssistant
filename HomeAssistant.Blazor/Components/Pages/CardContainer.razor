@@ -1,0 +1,21 @@
+﻿@using HomeAssistant.Blazor.Components.Models
+@* CardList.razor - Scrollable card container *@
+<div class="card-scroll-container">
+	@foreach (var card in Cards)
+	{
+			<Card Model="@card" />
+	})
+</div>
+
+@code {
+    [Parameter] public List<CardModel> Cards { get; set; }
+}
+
+<style>
+    .card-scroll-container {
+        max-height: 500px; /* Adjust the height as needed */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+</style>

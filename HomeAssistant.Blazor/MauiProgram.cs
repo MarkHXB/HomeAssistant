@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Blazored.Modal;
+using HomeAssistant.Blazor.Services;
+using Microsoft.Extensions.Logging;
 
 namespace HomeAssistant.Blazor
 {
@@ -20,6 +22,14 @@ namespace HomeAssistant.Blazor
 			builder.Services.AddBlazorWebViewDeveloperTools();
 			builder.Logging.AddDebug();
 #endif
+			string dbPath = Path.Combine(FileSystem.AppDataDirectory, "locations.db");
+
+			builder.Services.AddSingleton(new LocationDatabase(dbPath));
+			builder.Services.AddSingleton<HttpClient>();
+			builder.Services.AddSingleton<FirestoreService>();
+			builder.Services.AddSingleton<ShoppingListService>();
+
+			builder.Services.AddBlazoredModal();
 
 			return builder.Build();
 		}

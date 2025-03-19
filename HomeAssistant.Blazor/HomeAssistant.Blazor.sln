@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssistant.Blazor", "HomeAssistant.Blazor.csproj", "{3BB039F9-2A3F-6727-39F6-9719DECF767E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BB039F9-2A3F-6727-39F6-9719DECF767E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB039F9-2A3F-6727-39F6-9719DECF767E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB039F9-2A3F-6727-39F6-9719DECF767E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB039F9-2A3F-6727-39F6-9719DECF767E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5FA0BA22-921C-49F3-984A-7FD788B5573D}
+	EndGlobalSection
+EndGlobal

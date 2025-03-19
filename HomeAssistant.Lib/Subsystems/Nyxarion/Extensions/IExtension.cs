@@ -2,6 +2,6 @@
 {
 	public interface IExtension
 	{
-		Task ExecuteAsync();
+		Task ExecuteAsync(CancellationToken? cancellationToken = null);
 	}
 }

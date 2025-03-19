@@ -1,178 +1,107 @@
-﻿using Nyxarion;
+﻿using Newtonsoft.Json;
 
 namespace Nyxarion
 {
-	enum FileChangeType
-	{
-		Created,
-		Modified,
-		Renamed,
-		Deleted
-	}
-
 	class File
 	{
-		public string Path { get; set; }
+		public string Folder { get; set; }
 		public string Name { get; set; }
-		public string Extension { get; set; }
-		public DateTime CreatedAt { get; set; }
-		public DateTime ModifiedAt { get; set; }
-		public bool IsDeleted { get; set; }
-		public long Size { get; set; }
-		public FileChangeType ChangeType { get; set; }
+		public WatcherChangeTypes ChangeTypes { get; set; }
+		public DateTime ChangeDate { get; set; }
 	}
 
-	/// <summary>
-	/// Logs file changes to a JSON file.
-	/// <para>folderPaths means the paths you want to watch</para>
-	/// <para>logPath means the folder path you want to use as a working directory to this extension</para>
-	/// <para>logFileName means the file which will contain the changes were made from previous state to current, so its a compare</para>
-	/// </summary>
-	public class FileLogger : IExtension
+	public class FileLogger(IEnumerable<string> folderPathList, string logFolderPath) : IExtension
 	{
-		private readonly string _logFileName;
-		private readonly string _logPath;
-		private readonly IEnumerable<string> _folderPaths;
+		public IEnumerable<string> FolderPathList { get; } = folderPathList;
+		public string LogFolderPath { get; } = Path.Combine(logFolderPath, "file_logger_changes.json");
 
-		private readonly List<File> _history = new List<File>();
+		private static readonly object _lock = new object();
 
-		public FileLogger(IEnumerable<string> folderPaths, string logPath, string logFileName)
+		public async Task ExecuteAsync(CancellationToken? cancellationToken = null)
 		{
-			if (string.IsNullOrWhiteSpace(logPath))
+			if (!cancellationToken.HasValue)
 			{
-				throw new ArgumentException("Log path cannot be null or empty.");
-			}
-			if (string.IsNullOrWhiteSpace(logFileName) || logFileName.EndsWith(".json"))
-			{
-				throw new ArgumentException("Log file name cannot be null or empty or it shoudnt end with json.");
+				throw new ArgumentNullException(nameof(cancellationToken));
 			}
 
-			_folderPaths = folderPaths;
-			_logPath = logPath;
-			_logFileName = logFileName;
-		}
-
-		public async Task ExecuteAsync()
-		{
-		}
-
-		private async Task LogAsync(string folderName)
-		{
-			IList<File> history = GetScannedDirectories(folderName);
-
-			var json = System.Text.Json.JsonSerializer.Serialize(history);
-			await System.IO.File.WriteAllTextAsync(GetLogPath(folderName), json);
-		}
-
-		private IList<File> GetScannedDirectories(string folderName)
-		{
-			List<File> history = new List<File>();
-
-			foreach (var folderPath in _folderPaths.Where(fp => fp == folderName))
+			var tasks = FolderPathList.Select(folderPath => Task.Run(() =>
 			{
-				var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
-				history.AddRange(files.Select(filePath =>
+				using var watcher = new FileSystemWatcher(folderPath);
+
+				watcher.NotifyFilter = NotifyFilters.Attributes
+									 | NotifyFilters.CreationTime
+									 | NotifyFilters.DirectoryName
+									 | NotifyFilters.FileName
+									 | NotifyFilters.LastAccess
+									 | NotifyFilters.LastWrite
+									 | NotifyFilters.Security
+									 | NotifyFilters.Size;
+
+				watcher.Changed += OnChanged;
+				watcher.Created += OnCreated;
+				watcher.Deleted += OnDeleted;
+				watcher.Renamed += OnRenamed;
+
+				watcher.Filter = "*.pdf";
+				watcher.IncludeSubdirectories = true;
+				watcher.EnableRaisingEvents = true;
+
+				while (!cancellationToken.Value.IsCancellationRequested)
 				{
-					var fileInfo = new FileInfo(filePath);
-					return new File
-					{
-						Path = filePath,
-						Name = Path.GetFileName(filePath),
-						Extension = Path.GetExtension(filePath),
-						CreatedAt = fileInfo.CreationTime,
-						ModifiedAt = fileInfo.LastWriteTime,
-						Size = fileInfo.Length
-					};
-				}));
-
-			}
-
-			return history;
-		}
-
-		private async Task LogChanges(string folderName)
-		{
-			if (!System.IO.File.Exists(GetLogPath(folderName)))
-			{
-				return;
-			}
-
-			var json = await System.IO.File.ReadAllTextAsync(GetLogPath(folderName));
-			var history = System.Text.Json.JsonSerializer.Deserialize<List<File>>(json);
-
-			if (history == null)
-			{
-				return;
-			}
-
-			IList<File> scannedDirectories = GetScannedDirectories(folderName);
-
-			// Compare the two lists
-			foreach (var file in scannedDirectories)
-			{
-				var existingFile = history.FirstOrDefault(f => f.Path == file.Path);
-				if (existingFile == null)
-				{
-					// New file
-					file.ChangeType = FileChangeType.Created;
-					_history.Add(file);
+					Thread.Sleep(1000);
 				}
-				else if (existingFile.Name != file.Name)
-				{
-					// File has been renamed
-					file.ChangeType = FileChangeType.Renamed;
-					_history.Add(file);
-				}
-				else
-				{
-					// Check if the file has been modified
-					if (existingFile.ModifiedAt != file.ModifiedAt)
-					{
-						// File has been modified
-						file.ChangeType = FileChangeType.Modified;
-						_history.Add(file);
-					}
-				}
-			}
+			}, cancellationToken.Value));
 
-			// Check for deleted files
-			foreach (var file in history)
-			{
-				if (!scannedDirectories.Any(f => f.Path == file.Path))
-				{
-					// File has been deleted
-					file.ChangeType = FileChangeType.Deleted;
-					file.IsDeleted = true;
-					_history.Add(file);
-				}
-			}
-
-			json = System.Text.Json.JsonSerializer.Serialize(_history);
-
-			if (!System.IO.File.Exists(Path.Combine(_logPath, _logFileName) + ".json"))
-			{
-				await System.IO.File.WriteAllTextAsync(Path.Combine(_logPath, _logFileName) + ".json", json);
-				return;
-			}
-
-			string currentChangesInLog = await System.IO.File.ReadAllTextAsync(Path.Combine(_logPath, _logFileName) + ".json");
-
-			List<File> changes = System.Text.Json.JsonSerializer.Deserialize<List<File>>(currentChangesInLog);
-			changes.AddRange(_history);
-			json = System.Text.Json.JsonSerializer.Serialize(changes);
-			await System.IO.File.WriteAllTextAsync(Path.Combine(_logPath, _logFileName) + ".json", json);
+			await Task.WhenAll(tasks);
 		}
 
-		private string GetLogPath(string folderName)
+		private async void OnChanged(object sender, FileSystemEventArgs e) => await LogChange(e.FullPath, WatcherChangeTypes.Changed);
+
+		private async void OnCreated(object sender, FileSystemEventArgs e) => await LogChange(e.FullPath, WatcherChangeTypes.Created);
+
+		private async void OnDeleted(object sender, FileSystemEventArgs e) => await LogChange(e.FullPath, WatcherChangeTypes.Deleted);
+
+		private async void OnRenamed(object sender, RenamedEventArgs e) => await LogChange(e.FullPath, WatcherChangeTypes.Renamed);
+
+		private async Task LogChange(string filePath, WatcherChangeTypes changeType)
 		{
-			return Path.Combine(_logPath, $"file_logger_history_{GetExactFolderName(folderName)}.json");
+			File file = new File
+			{
+				Folder = Path.GetDirectoryName(filePath),
+				Name = GetLogFileName(filePath),
+				ChangeTypes = changeType,
+				ChangeDate = DateTime.Now
+			};
+
+			await AppendChangeToFile(file);
 		}
 
-		private string GetExactFolderName(string folderPath)
+		private string GetLogFileName(string filePath)
 		{
-			_ = folderPath ?? throw new ArgumentNullException(nameof(folderPath));
+			return filePath.Split('\\').Last();
+		}
 
-			return folderPath.Split('\\').Last();
+		private async Task AppendChangeToFile(File change)
+		{
+			List<File> changes = new List<File>();
+
+			lock (_lock)
+			{
+				if (!System.IO.Directory.Exists(logFolderPath))
+				{
+					Directory.CreateDirectory(logFolderPath);
+				}
+
+				if (System.IO.File.Exists(LogFolderPath))
+				{
+					var data = System.IO.File.ReadAllText(LogFolderPath);
+					changes = JsonConvert.DeserializeObject<List<File>>(data) ?? new List<File>();
+				}
+
+				changes.Add(change);
+
+				 System.IO.File.WriteAllText(LogFolderPath, JsonConvert.SerializeObject(changes));
+			}			
 		}
 	}
 }

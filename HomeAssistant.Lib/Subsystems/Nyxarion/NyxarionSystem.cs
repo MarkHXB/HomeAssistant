@@ -44,7 +44,8 @@ namespace Nyxarion
 			{
 				throw new ArgumentNullException("file_logger_folder_path_list");
 			}
-			//fileLoggerExtension = new FileLogger(folderPaths, _extensionsLogFolderPath, "file_logger_changed_files");
+
+			fileLoggerExtension = new FileLogger(folderPaths, _extensionsLogFolderPath);
 
 			// Init ForeGround
 			foreGroundExtension = new ForeGroundWindowLogger("foreground_logger.json", _extensionsLogFolderPath);
@@ -52,14 +53,19 @@ namespace Nyxarion
 
 		public override async Task TaskObject(CancellationToken cancellationToken)
 		{
-			//Task fileLogger = Task.Run(async () =>
-			//{
-			//	await fileLoggerExtension.ExecuteAsync();
-			//}, cancellationToken);
+			var tasks = new List<Task>
+			{
+				Task.Run(async () =>
+				{
+					await fileLoggerExtension.ExecuteAsync(cancellationToken);
+				}, cancellationToken),
+				Task.Run(async () =>
+				{
+					await foreGroundExtension.ExecuteAsync(cancellationToken);
+				}, cancellationToken)
+			};
 
-
-			await foreGroundExtension.ExecuteAsync();
-
+			await Task.WhenAll(tasks);
 		}
 	}
 }

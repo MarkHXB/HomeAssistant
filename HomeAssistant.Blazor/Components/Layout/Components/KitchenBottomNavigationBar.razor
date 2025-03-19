@@ -1,0 +1,72 @@
+﻿<div class="bottom-nav">  
+   <div class="nav-grid">  
+       <div class="nav-item">  
+           <a href="/kitchen">  
+               <i class="fa-solid fa-clipboard-list"></i>  
+           </a>  
+       </div>  
+       <div class="nav-item fab-container">  
+           <button class="fab-button">  
+               <i class="fa-solid fa-kitchen-set"></i>  
+           </button>  
+       </div>  
+       <div class="nav-item">  
+           <a href="/jedi">  
+               <i class="fa-brands fa-jedi-order"></i>  
+           </a>  
+       </div>  
+   </div>  
+</div>  
+
+<style>  
+   .fa, .fas, .far, .fal, .fad, .fab {  
+       font-family: "Font Awesome 6 Free" !important;  
+       font-weight: 900 !important;  
+       display: inline-block;  
+   }  
+
+   .bottom-nav {  
+       position: fixed;  
+       bottom: 0;  
+       left: 0;  
+       right: 0;  
+       background: white;  
+       padding: 10px;  
+       box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);  
+       border-radius: 20px 20px 0 0;  
+   }  
+
+   .nav-grid {  
+       display: flex;  
+       justify-content: center;  
+       align-items: center;  
+   }  
+
+   .nav-item {  
+       flex: 1;  
+       text-align: center;  
+   }  
+
+   .fab-container {  
+       display: flex;  
+       justify-content: center;  
+       align-items: center;  
+       position: relative;  
+   }  
+
+   .fab-button {  
+       position: absolute;  
+       top: -25px;  
+       background-color: var(--primary-color);  
+       border: none;  
+       border-radius: 50%;  
+       width: 56px;  
+       height: 56px;  
+       color: white;  
+       font-size: 24px;  
+       display: flex;  
+       justify-content: center;  
+       align-items: center;  
+       box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);  
+   }  
+</style>

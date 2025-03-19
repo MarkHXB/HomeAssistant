@@ -1,0 +1,17 @@
+﻿@using HomeAssistant.Blazor.Components.Models
+<div class="card-container">
+    <div class="card" style="max-height:@Model.MaxHeight; min-width:@Model.MinWidth;">
+        <div class="image-container">
+            <img src="@Model.ImageUrl" alt="Card Image" />
+            @if (Model.NotificationCount > 0)
+            {
+                <span class="notification-badge">@Model.NotificationCount</span>
+            }
+        </div>
+        <h3>@Model.Title</h3>
+    </div>
+</div>
+
+@code {
+    [Parameter] public CardModel Model { get; set; } = new CardModel();
+}

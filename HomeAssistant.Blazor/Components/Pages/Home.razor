@@ -1,5 +1,42 @@
 ﻿@page "/"
+@using HomeAssistant.Blazor.Components.Models
+@* 
+<CardContainer Cards="@Cards" /> *@
 
-<h1>Hello, world!</h1>
+<HomeAssistant.Blazor.Components.Pages.Kitchen.ShoppingList />
 
-Welcome to your new app.
+@code {
+
+	private List<CardModel> Cards = new List<CardModel>
+		{
+			new CardModel(
+				imageUrl: "https://example.com/image1.jpg",
+				title: "Card 1",
+				maxHeight: 200,
+				minWidth: 150,
+				notificationCount: 5
+			),
+			new CardModel(
+				imageUrl: "https://example.com/image2.jpg",
+				title: "Card 2",
+				maxHeight: 250,
+				minWidth: 160,
+				notificationCount: 3
+			),
+			new CardModel(
+				imageUrl: "https://example.com/image3.jpg",
+				title: "Card 3",
+				maxHeight: 300,
+				minWidth: 170,
+				notificationCount: 10
+			),
+			new CardModel(
+				imageUrl: "https://example.com/image3.jpg",
+				title: "Card 3",
+				maxHeight: 300,
+				minWidth: 170,
+				notificationCount: 10
+			)
+		};
+
+}

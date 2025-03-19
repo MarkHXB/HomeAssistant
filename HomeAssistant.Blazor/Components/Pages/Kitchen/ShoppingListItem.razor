@@ -1,0 +1,26 @@
+﻿<div>
+    <input type="checkbox" @bind="Model.IsChecked" />
+    <div>
+        <h6>@Model.Name</h6>
+        <p>@Model.Quantity</p>
+        <p>@Model.BoughtOn</p>
+    </div>
+</div>
+
+@code {
+    [Parameter] public ShoppingListItemModel Model { get; set; } = new ShoppingListItemModel();
+    [Parameter] public EventCallback<ShoppingListItemModel> OnDelete { get; set; }
+
+    private async Task DeleteItem()
+    {
+        await OnDelete.InvokeAsync(Model);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Model.IsChecked)
+        {
+            Model.BoughtOn = DateTime.Now;
+        }
+    }
+}
